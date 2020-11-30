@@ -1,0 +1,30 @@
+swagger: '2.0'
+info:
+  version: '1.0.0'
+  title: 'P3 API'
+  description: 'Simple API to manage things'
+host: 'localhost:5000'
+basePath: '/'
+consumes:
+  - 'application/json'
+produces:
+  - 'application/json'
+paths:
+  /things:
+    get:
+      summary: 'Get a list of things'
+      responses:
+        '200':
+          description: 'Everything went well'
+          schema:
+            type: 'array'
+            items:
+              $ref: '#/definitions/Thing'
+definitions:
+  Thing:
+    properties:
+      id:
+        type: 'integer'
+        format: 'int64'
+      name:
+        type: 'string'

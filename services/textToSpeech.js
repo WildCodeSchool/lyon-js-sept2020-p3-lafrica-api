@@ -1,15 +1,16 @@
 // Imports the Google Cloud client library
+
 const textToSpeech = require('@google-cloud/text-to-speech');
 
 // Import other required libraries
 const fs = require('fs');
 const util = require('util');
 
-const projectId = 'test-lam';
-const keyFileName = '../Test-LAM-0d28b0da2eea.json';
+// const projectId = 'test-lam'; S
+// const keyFileName = '../Test-LAM-0d28b0da2eea.json';
 
 // Creates a client
-const client = new textToSpeech.TextToSpeechClient({ projectId, keyFileName });
+const client = new textToSpeech.TextToSpeechClient();
 
 async function quickStart() {
   // The text to synthesize
@@ -31,4 +32,4 @@ async function quickStart() {
   await writeFile('output.mp3', response.audioContent, 'binary');
   console.log('Audio content written to file: output.mp3');
 }
-module.export = quickStart;
+module.exports = quickStart;

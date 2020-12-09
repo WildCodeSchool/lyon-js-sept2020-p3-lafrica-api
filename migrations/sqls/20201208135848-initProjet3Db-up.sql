@@ -1,3 +1,7 @@
+DROP TABLE IF EXISTS `mailing_campaign_to_contact`;
+DROP TABLE IF EXISTS `mailing_campaign`;
+DROP TABLE IF EXISTS `contact`;
+DROP TABLE IF EXISTS `user`;
 CREATE TABLE IF NOT EXISTS `User` (
   `id` INT NOT NULL AUTO_INCREMENT,
   `username` VARCHAR(255) NOT NULL,

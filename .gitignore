@@ -108,3 +108,7 @@ dist
 .DS_Store
 
 file-storage/
+
+
+file-storage/private
+Test-LAM-0d28b0da2eea.json

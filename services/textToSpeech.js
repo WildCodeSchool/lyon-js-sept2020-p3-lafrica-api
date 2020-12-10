@@ -20,8 +20,9 @@ async function quickStart(textToVocalize) {
   const request = {
     input: { text },
     // Select the language and SSML voice gender (optional)
-    voice: { languageCode: 'en-US', ssmlGender: 'NEUTRAL' },
+    voice: { languageCode: 'fr-FR', ssmlGender: 'FEMALE', name : "fr-FR-Wavenet-E" },
     // select the type of audio encoding
+    
     audioConfig: { audioEncoding: 'MP3' },
   };
 
@@ -29,7 +30,9 @@ async function quickStart(textToVocalize) {
   const [response] = await client.synthesizeSpeech(request);
   // Write the binary audio content to a local file
   const writeFile = util.promisify(fs.writeFile);
-  await writeFile('/usr/src/app/file-storage/public/output.mp3', response.audioContent, 'binary');
-  console.log('Audio content written to file: output.mp3');
+  const audioFileName = Math.random().toString(36).replace(/[^a-z]+/g, '').substring(0, 5)
+  await writeFile(`/usr/src/app/file-storage/public/${audioFileName}.mp3`, response.audioContent, 'binary');
+  console.log(`Audio content written to file: ${audioFileName}.mp3`);
+  return audioFileName;
 }
 module.exports = quickStart;

@@ -33,7 +33,7 @@ async function quickStart(textToVocalize) {
 
   // Performs the text-to-speech request
   const [response] = await client.synthesizeSpeech(request);
-  const pathFile = path.join(__dirname + '/../file-storage/public');
+  const pathFile = path.join(`${__dirname  }/../file-storage/public`);
 
   // Write the binary audio content to a local file
   const writeFile = util.promisify(fs.writeFile);

@@ -109,5 +109,5 @@ dist
 
 file-storage/
 
-#google apiKey
-myApiKey.json
+
+file-storage/private

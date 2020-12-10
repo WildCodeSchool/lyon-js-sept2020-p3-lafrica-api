@@ -5,7 +5,6 @@ const YAML = require('yamljs');
 const { inTestEnv, inProdEnv, SERVER_PORT } = require('./env');
 
 const app = express();
-require('./routes')(app);
 // docs
 if (!inProdEnv && !inTestEnv) {
   const swaggerDocument = YAML.load('./docs/swagger.yaml');

@@ -12,9 +12,9 @@ const util = require('util');
 // Creates a client
 const client = new textToSpeech.TextToSpeechClient();
 
-async function quickStart() {
+async function quickStart(textToVocalize) {
   // The text to synthesize
-  const text = 'hello, world!';
+  const text = textToVocalize;
 
   // Construct the request
   const request = {
@@ -29,7 +29,7 @@ async function quickStart() {
   const [response] = await client.synthesizeSpeech(request);
   // Write the binary audio content to a local file
   const writeFile = util.promisify(fs.writeFile);
-  await writeFile('output.mp3', response.audioContent, 'binary');
+  await writeFile('/usr/src/app/file-storage/public/output.mp3', response.audioContent, 'binary');
   console.log('Audio content written to file: output.mp3');
 }
 module.exports = quickStart;

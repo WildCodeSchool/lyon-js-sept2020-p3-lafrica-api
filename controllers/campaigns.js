@@ -6,6 +6,6 @@ module.exports.getCollection = async (req, res) => {
   res.json(data);
 };
 
-module.exports.vocalization = async () => {
-  quickStart();
+module.exports.vocalization = async (req) => {
+  quickStart(req.body.message);
 };

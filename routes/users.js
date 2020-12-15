@@ -1,8 +1,8 @@
 const userRouter = require('express').Router();
 
 const asyncHandler = require('express-async-handler');
-const userController = require('../controllers/campaigns');
+const userController = require('../controllers/users');
 
-userRouter.get('/signUp', asyncHandler(userController.handlePost));
+userRouter.post('/signUp', asyncHandler(userController.handlePost));
 
 module.exports = userRouter;

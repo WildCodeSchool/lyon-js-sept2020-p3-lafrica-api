@@ -11,7 +11,7 @@ model verifyPassword */
 // Vérification si l'email exsiste déja dans la DB
 
 const emailAlreadyExists = async (email) => {
-  const rows = await db.query('SELECT * FROM users WHERE email = ?', [email]);
+  const rows = await db.query('SELECT * FROM user WHERE email = ?', [email]);
   if (rows.length) {
     return true;
   }
@@ -41,18 +41,18 @@ const validate = async (attributes) => {
 // Utilisation de Argon2 pour "hasher" le password
 
 const hashPassword = async (password) => {
-  argon2.hash(password);
+  return argon2.hash(password);
 };
 
 // Création de l'utilisateur dans la base de données, ou l'on va stocker ces infos sauf son password perso, on stock la version hashée et on retourne quelques infos pour s'en servir sur le front
 
 const createUserInDatabase = async (newAttributes) => {
   await validate(newAttributes);
-  const { firstname, lastname, email, password } = newAttributes;
+  const { firstname, lastname, email, password, phone_number } = newAttributes;
   const encrypted_password = await hashPassword(password);
   const res = await db.query(
-    'INSERT INTO users (firstname, lastname, email, encrypted_password) VALUES (?, ?, ?, ?)',
-    [firstname, lastname, email, encrypted_password]
+    'INSERT INTO user (firstname, lastname, email, encrypted_password, phone_number) VALUES (?, ?, ?, ?, ?)',
+    [firstname, lastname, email, encrypted_password, phone_number]
   );
   return { firstname, lastname, email, id: res.insertId };
 };

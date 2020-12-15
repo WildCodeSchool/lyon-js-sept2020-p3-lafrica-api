@@ -8,6 +8,8 @@ mode hashPassword
 model createUserInDatabase
 model verifyPassword */
 
+// Vérification si l'email exsiste déja dans la DB
+
 const emailAlreadyExists = async (email) => {
   const rows = await db.query('SELECT * FROM users WHERE email = ?', [email]);
   if (rows.length) {
@@ -15,6 +17,8 @@ const emailAlreadyExists = async (email) => {
   }
   return false;
 };
+
+// Vérification si les infos provenant du formulaire sont OK (présence des infos puis passagage de ces infos dans emailAlreadyExist)
 
 const validate = async (attributes) => {
   const {
@@ -34,9 +38,13 @@ const validate = async (attributes) => {
   throw new ValidationError();
 };
 
+// Utilisation de Argon2 pour "hasher" le password
+
 const hashPassword = async (password) => {
   argon2.hash(password);
 };
+
+// Création de l'utilisateur dans la base de données, ou l'on va stocker ces infos sauf son password perso, on stock la version hashée et on retourne quelques infos pour s'en servir sur le front
 
 const createUserInDatabase = async (newAttributes) => {
   await validate(newAttributes);
@@ -50,11 +58,11 @@ const createUserInDatabase = async (newAttributes) => {
 };
 
 module.exports = {
-  findByEmail,
+  //   findByEmail,
   validate,
   createUserInDatabase,
   emailAlreadyExists,
-  findOne,
+  //   findOne,
   hashPassword,
-  verifyPassword,
+  // verifyPassword,
 };

@@ -5,4 +5,5 @@ ADD
 AFTER
   `firstname`,
   CHANGE COLUMN `username` `firstname` VARCHAR(255) NOT NULL,
-  CHANGE COLUMN `password` `encrypted_password` VARCHAR(255) NOT NULL;
+  CHANGE COLUMN `password` `encrypted_password` VARCHAR(255) NOT NULL,
+  CHANGE COLUMN `role` `role` VARCHAR(45) NULL;

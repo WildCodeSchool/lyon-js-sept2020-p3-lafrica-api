@@ -1,4 +1,4 @@
-const User = require("../models/users");
+const User = require('../models/users');
 
 module.exports.login = async (req, res) => {
   const user = await User.findByEmail(req.body.email, false);
@@ -12,7 +12,7 @@ module.exports.login = async (req, res) => {
     req.session.userId = user.id;
     req.session.save((err) => {
       if (err) return res.sendStatus(500);
-      return res.send(200);
+      return res.sendStatus(200);
     });
   } else {
     res.sendStatus(401);
@@ -22,6 +22,6 @@ module.exports.login = async (req, res) => {
 module.exports.logout = async (req, res) => {
   req.session.destroy((err) => {
     if (err) return res.sendStatus(500);
-    return res.send(200);
+    return res.sendStatus(200);
   });
 };

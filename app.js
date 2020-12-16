@@ -14,7 +14,6 @@ const {
 const sessionStore = require('./sessionStore');
 
 const app = express();
-
 // docs
 if (!inProdEnv && !inTestEnv) {
   const swaggerDocument = YAML.load('./docs/swagger.yaml');

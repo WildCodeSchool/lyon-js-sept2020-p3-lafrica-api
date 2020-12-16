@@ -1,6 +1,6 @@
-const db = require('../db');
+const db = require("../db");
 
 module.exports.findAllCampaigns = () => {
-  return db.query('SELECT * FROM mailing_campaign');
+  return db.query("SELECT * FROM mailing_campaign");
 };
 

@@ -1,5 +1,5 @@
 ALTER TABLE
-  `user`
+  `User`
 ADD
   COLUMN `lastname` VARCHAR(255) NOT NULL
 AFTER

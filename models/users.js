@@ -1,17 +1,20 @@
-const argon2 = require("argon2");
-const db = require("../db");
-const { ValidationError, RecordNotFoundError } = require("../error-types");
+const argon2 = require('argon2');
+const db = require('../db');
+const { ValidationError, RecordNotFoundError } = require('../error-types');
 
-/* model emailALreadyExists
-model Validate 
-mode hashPassword
-model createUserInDatabase
-model verifyPassword */
+const findOne = async (id, failIfNotFound = true) => {
+  const user = await db.query('SELECT * FROM user WHERE id = ?', [id]);
+  if (user.length) {
+    return user[0];
+  }
+  if (failIfNotFound) throw new RecordNotFoundError();
+  return null;
+};
 
 // Vérification si l'email exsiste déja dans la DB
 
 const emailAlreadyExists = async (email) => {
-  const rows = await db.query("SELECT * FROM user WHERE email = ?", [email]);
+  const rows = await db.query('SELECT * FROM user WHERE email = ?', [email]);
   if (rows.length) {
     return true;
   }
@@ -51,7 +54,7 @@ const createUserInDatabase = async (newAttributes) => {
   const { firstname, lastname, email, password, phone_number } = newAttributes;
   const encrypted_password = await hashPassword(password);
   const res = await db.query(
-    "INSERT INTO user (firstname, lastname, email, encrypted_password, phone_number) VALUES (?, ?, ?, ?, ?)",
+    'INSERT INTO user (firstname, lastname, email, encrypted_password, phone_number) VALUES (?, ?, ?, ?, ?)',
     [firstname, lastname, email, encrypted_password, phone_number]
   );
   return { firstname, lastname, email, id: res.insertId };
@@ -75,7 +78,7 @@ module.exports = {
   validate,
   createUserInDatabase,
   emailAlreadyExists,
-  //   findOne,
+  findOne,
   hashPassword,
   verifyPassword,
 };

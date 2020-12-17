@@ -12,7 +12,8 @@ module.exports.login = async (req, res) => {
     req.session.userId = user.id;
     req.session.save((err) => {
       if (err) return res.sendStatus(500);
-      return res.sendStatus(200);
+      console.log(user.id);
+      return res.status(200).json(user.id);
     });
   } else {
     res.sendStatus(401);

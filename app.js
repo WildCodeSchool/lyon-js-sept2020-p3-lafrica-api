@@ -2,7 +2,19 @@ const express = require('express');
 const cors = require('cors');
 const swaggerUi = require('swagger-ui-express');
 const YAML = require('yamljs');
-const { inTestEnv, inProdEnv, SERVER_PORT } = require('./env');
+const session = require('express-session');
+const {
+  inTestEnv,
+  inProdEnv,
+  SERVER_PORT,
+  SESSION_COOKIE_NAME,
+  SESSION_COOKIE_SECRET,
+  CORS_ALLOWED_ORIGINS,
+} = require('./env');
+const sessionStore = require('./sessionStore');
+const handleRecordNotFoundError = require('./middlewares/handleRecordNotFoundError');
+const handleValidationError = require('./middlewares/handleValidationError');
+const handleServerInternalError = require('./middlewares/handleServerInternalError');
 
 const app = express();
 
@@ -12,16 +24,41 @@ if (!inProdEnv && !inTestEnv) {
   app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 }
 
+const allowedOrigins = CORS_ALLOWED_ORIGINS.split(',');
+const corsOptions = {
+  origin: (origin, callback) => {
+    if (origin === undefined || allowedOrigins.indexOf(origin) !== -1) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true,
+};
+
 // pre-route middlewares
-app.use(cors());
+app.use(cors(corsOptions));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(
+  session({
+    key: SESSION_COOKIE_NAME,
+    secret: SESSION_COOKIE_SECRET,
+    store: sessionStore,
+    resave: false,
+    saveUninitialized: false,
+    cookie: { sameSite: true, secure: inProdEnv },
+  })
+);
 
 // routes
 require('./routes')(app);
 
 // post-route middlewares
 app.set('x-powered-by', false);
+app.use(handleRecordNotFoundError);
+app.use(handleValidationError);
+app.use(handleServerInternalError);
 
 // server setup
 const server = app.listen(SERVER_PORT, () => {

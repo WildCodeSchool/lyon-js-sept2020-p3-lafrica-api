@@ -1,4 +1,4 @@
-const Joi = require("joi");
+const Joi = require('joi');
 
 const schema = Joi.object({
   firstnameValidator: Joi.string().max(50).required(),
@@ -18,14 +18,15 @@ const schema = Joi.object({
     .pattern(
       new RegExp(/^(?=.{6,}$)(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*\W).*$/)
     ),
-  password_confirmationValidator: Joi.ref("password"),
-}).with("password", "password_confirmation");
+  password_confirmationValidator: Joi.ref('passwordValidator'),
+}).with('password', 'password_confirmation');
 
 module.exports = async (req, res, next) => {
   const {
     firstname,
     lastname,
     phone_number,
+    email,
     password,
     password_confirmation,
   } = req.body;
@@ -34,6 +35,7 @@ module.exports = async (req, res, next) => {
     await schema.validateAsync({
       firstnameValidator: firstname,
       lastnameValidator: lastname,
+      emailValidator: email,
       phone_numberValidator: phone_number,
       passwordValidator: password,
       password_confirmationValidator: password_confirmation,

@@ -37,6 +37,10 @@ const corsOptions = {
   credentials: true,
 };
 
+console.log(SESSION_COOKIE_NAME);
+console.log(SESSION_COOKIE_SECRET);
+console.log(SESSION_COOKIE_DOMAIN);
+
 // pre-route middlewares
 app.use(cors(corsOptions));
 app.use(express.json());

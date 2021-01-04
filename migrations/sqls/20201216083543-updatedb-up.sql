@@ -30,7 +30,7 @@ CREATE TABLE IF NOT EXISTS `user` (
     `role` VARCHAR(45) NULL,
     `manager_id` INT NULL,
     PRIMARY KEY (`id`),
-    INDEX `fk_user_user1_idx` (`manager_id` ASC) VISIBLE,
+    INDEX `fk_user_user1_idx` (`manager_id` ASC),
     CONSTRAINT `fk_user_user1` FOREIGN KEY (`manager_id`) REFERENCES `user` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
   ) ENGINE = InnoDB DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_bin;
 -- -----------------------------------------------------
@@ -43,7 +43,7 @@ CREATE TABLE IF NOT EXISTS `user` (
     `phone_number` INT NOT NULL,
     `id_client_user` INT NULL,
     PRIMARY KEY (`id`),
-    INDEX `fk_contact_client user1_idx` (`id_client_user` ASC) VISIBLE,
+    INDEX `fk_contact_client user1_idx` (`id_client_user` ASC),
     CONSTRAINT `fk_contact_client user1` FOREIGN KEY (`id_client_user`) REFERENCES `user` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
   ) ENGINE = InnoDB DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_bin;
 -- -----------------------------------------------------
@@ -57,7 +57,7 @@ CREATE TABLE IF NOT EXISTS `user` (
     `vocal_message_file_url` VARCHAR(255) NOT NULL,
     `date` DATETIME NOT NULL,
     PRIMARY KEY (`id`),
-    INDEX `fk_mailing_campaign_client user1_idx` (`id_client_user` ASC) VISIBLE,
+    INDEX `fk_mailing_campaign_client user1_idx` (`id_client_user` ASC),
     CONSTRAINT `fk_mailing_campaign_client user1` FOREIGN KEY (`id_client_user`) REFERENCES `user` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
   ) ENGINE = InnoDB DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_bin;
 -- -----------------------------------------------------
@@ -68,8 +68,8 @@ CREATE TABLE IF NOT EXISTS `user` (
     `mailing_campaign_id` INT NOT NULL,
     `sending_status` VARCHAR(45) NOT NULL COMMENT "Status d\'envoi sur le numéro",
     PRIMARY KEY (`contact_id`, `mailing_campaign_id`),
-    INDEX `fk_contact_has_mailing_campaign_mailing_campaign1_idx` (`mailing_campaign_id` ASC) VISIBLE,
-    INDEX `fk_contact_has_mailing_campaign_contact1_idx` (`contact_id` ASC) VISIBLE,
+    INDEX `fk_contact_has_mailing_campaign_mailing_campaign1_idx` (`mailing_campaign_id` ASC),
+    INDEX `fk_contact_has_mailing_campaign_contact1_idx` (`contact_id` ASC),
     CONSTRAINT `fk_contact_has_mailing_campaign_contact1` FOREIGN KEY (`contact_id`) REFERENCES `contact` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
     CONSTRAINT `fk_contact_has_mailing_campaign_mailing_campaign1` FOREIGN KEY (`mailing_campaign_id`) REFERENCES `mailing_campaign` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
   ) ENGINE = InnoDB DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_bin;

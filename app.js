@@ -10,6 +10,7 @@ const {
   SESSION_COOKIE_NAME,
   SESSION_COOKIE_SECRET,
   CORS_ALLOWED_ORIGINS,
+  SESSION_COOKIE_DOMAIN,
 } = require('./env');
 const sessionStore = require('./sessionStore');
 const handleRecordNotFoundError = require('./middlewares/handleRecordNotFoundError');
@@ -47,7 +48,11 @@ app.use(
     store: sessionStore,
     resave: false,
     saveUninitialized: false,
-    cookie: { sameSite: true, secure: inProdEnv },
+    cookie: {
+      sameSite: true,
+      secure: inProdEnv,
+      domain: SESSION_COOKIE_DOMAIN,
+    },
   })
 );
 

@@ -49,7 +49,7 @@ app.use(
     saveUninitialized: false,
     cookie: {
       sameSite: false,
-      secure: inProdEnv,
+      secure: false,
     },
   })
 );

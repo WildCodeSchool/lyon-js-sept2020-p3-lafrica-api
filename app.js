@@ -10,6 +10,7 @@ const {
   SESSION_COOKIE_NAME,
   SESSION_COOKIE_SECRET,
   CORS_ALLOWED_ORIGINS,
+  SESSION_COOKIE_DOMAIN,
 } = require('./env');
 const sessionStore = require('./sessionStore');
 const handleRecordNotFoundError = require('./middlewares/handleRecordNotFoundError');
@@ -17,6 +18,7 @@ const handleValidationError = require('./middlewares/handleValidationError');
 const handleServerInternalError = require('./middlewares/handleServerInternalError');
 
 const app = express();
+app.set('trust proxy', 1);
 
 // docs
 if (!inProdEnv && !inTestEnv) {
@@ -48,8 +50,9 @@ app.use(
     resave: false,
     saveUninitialized: false,
     cookie: {
-      sameSite: false,
-      secure: false,
+      sameSite: true,
+      secure: inProdEnv,
+      domain: SESSION_COOKIE_DOMAIN,
     },
   })
 );

@@ -10,7 +10,6 @@ const {
   SESSION_COOKIE_NAME,
   SESSION_COOKIE_SECRET,
   CORS_ALLOWED_ORIGINS,
-  SESSION_COOKIE_DOMAIN,
 } = require('./env');
 const sessionStore = require('./sessionStore');
 const handleRecordNotFoundError = require('./middlewares/handleRecordNotFoundError');
@@ -37,10 +36,6 @@ const corsOptions = {
   credentials: true,
 };
 
-console.log(SESSION_COOKIE_NAME);
-console.log(SESSION_COOKIE_SECRET);
-console.log(SESSION_COOKIE_DOMAIN);
-
 // pre-route middlewares
 app.use(cors(corsOptions));
 app.use(express.json());
@@ -53,9 +48,8 @@ app.use(
     resave: false,
     saveUninitialized: false,
     cookie: {
-      sameSite: true,
-      secure: inProdEnv,
-      domain: SESSION_COOKIE_DOMAIN,
+      sameSite: false,
+      secure: false,
     },
   })
 );

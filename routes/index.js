@@ -5,6 +5,7 @@ const authRoutes = require('./auth');
 
 const requireCurrentUser = require('../middlewares/requireCurrentUser');
 
+// eslint-disable-next-line
 module.exports = (app) => {
   // app.use('/things', thingsRoutes);
   app.use('/users', usersRouter);

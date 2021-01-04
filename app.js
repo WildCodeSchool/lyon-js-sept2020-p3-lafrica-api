@@ -17,6 +17,7 @@ const handleValidationError = require('./middlewares/handleValidationError');
 const handleServerInternalError = require('./middlewares/handleServerInternalError');
 
 const app = express();
+
 // docs
 if (!inProdEnv && !inTestEnv) {
   const swaggerDocument = YAML.load('./docs/swagger.yaml');

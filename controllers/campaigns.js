@@ -1,7 +1,7 @@
-const fs = require('fs');
-const path = require('path');
-const { findAllCampaigns } = require('../models/campaigns');
-const quickStart = require('../services/textToSpeech');
+const fs = require("fs");
+const path = require("path");
+const { findAllCampaigns } = require("../models/campaigns");
+const quickStart = require("../services/textToSpeech");
 
 module.exports.getCollection = async (req, res) => {
   const [data] = await findAllCampaigns(req.currentUser.id);
@@ -9,7 +9,9 @@ module.exports.getCollection = async (req, res) => {
 };
 
 module.exports.vocalization = async (req, res) => {
-  const fileName = await quickStart(req.body.message);
+  const fileName = await quickStart(
+    req.body.message || req.uploadedTextToVocalize
+  );
   res.status(200).send(fileName);
 };
 

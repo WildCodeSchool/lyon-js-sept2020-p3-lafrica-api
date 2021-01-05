@@ -10,7 +10,7 @@ module.exports.getCollection = async (req, res) => {
 
 module.exports.vocalization = async (req, res) => {
   const fileName = await quickStart(
-    req.body.message || req.uploadedTextToVocalize
+    req.uploadedTextToVocalize || req.body.message
   );
   res.status(200).send(fileName);
 };

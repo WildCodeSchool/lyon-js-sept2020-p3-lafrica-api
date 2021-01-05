@@ -2,16 +2,15 @@ const campaignsRouter = require("express").Router();
 
 const asyncHandler = require("express-async-handler");
 const campaignsController = require("../controllers/campaigns");
-const readText = require("../middlewares/readText");
 const uploadText = require("../middlewares/uploadText");
 
 campaignsRouter.get("/", asyncHandler(campaignsController.getCollection));
 campaignsRouter.post(
-  "/TTS",
+  "/uploadtext",
   uploadText,
-  readText,
-  asyncHandler(campaignsController.vocalization)
+  asyncHandler(campaignsController.readText)
 );
+campaignsRouter.post("/TTS", asyncHandler(campaignsController.vocalization));
 campaignsRouter.get("/audio", asyncHandler(campaignsController.playAudio));
 
 module.exports = campaignsRouter;

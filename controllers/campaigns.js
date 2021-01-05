@@ -1,5 +1,6 @@
 const fs = require("fs");
 const path = require("path");
+const util = require("util");
 const { findAllCampaigns } = require("../models/campaigns");
 const quickStart = require("../services/textToSpeech");
 
@@ -9,9 +10,7 @@ module.exports.getCollection = async (req, res) => {
 };
 
 module.exports.vocalization = async (req, res) => {
-  const fileName = await quickStart(
-    req.uploadedTextToVocalize || req.body.message
-  );
+  const fileName = await quickStart(req.body.message);
   res.status(200).send(fileName);
 };
 
@@ -21,4 +20,15 @@ module.exports.playAudio = async (req, res) => {
   const pathFile = path.join(`${__dirname}/../file-storage/public`);
   const stream = fs.createReadStream(`${pathFile}/${audioFile}`);
   stream.pipe(res);
+};
+
+module.exports.readText = async (req, res) => {
+  const readfile = util.promisify(fs.readFile);
+  try {
+    const uploadedTextToVocalize = await readfile(req.file.path, "utf-8");
+    return res.send(uploadedTextToVocalize);
+  } catch (err) {
+    console.error(err);
+    return res.status(500).send("Something went wrong");
+  }
 };

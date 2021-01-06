@@ -41,6 +41,7 @@ const corsOptions = {
 app.use(cors(corsOptions));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use('/file-storage', express.static('file-storage'));
 app.use(
   session({
     key: SESSION_COOKIE_NAME,

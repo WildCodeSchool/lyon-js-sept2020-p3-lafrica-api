@@ -48,6 +48,14 @@ async function textVocalization(textToVocalize) {
     },
   };
 
+  let audioFileExt;
+
+  if (audioEncoding === 'MP3') {
+    audioFileExt = 'mp3';
+  } else {
+    audioFileExt = 'wav';
+  }
+
   // Performs the text-to-speech request
   const [response] = await client.synthesizeSpeech(request);
   const pathFile = path.join(`${__dirname}/../file-storage/public`);
@@ -59,10 +67,13 @@ async function textVocalization(textToVocalize) {
     .replace(/[^a-z]+/g, '')
     .substring(0, 5);
   await writeFile(
-    `${pathFile}/${audioFileName}.${audioEncoding.toLowerCase()}`,
+    `${pathFile}/${audioFileName}.${audioFileExt}`,
     response.audioContent,
     'binary'
   );
-  return audioFileName;
+
+  const audioFile = `${audioFileName}.${audioFileExt}`;
+
+  return audioFile;
 }
 module.exports = textVocalization;

@@ -15,11 +15,19 @@ module.exports.vocalization = async (req, res) => {
 };
 
 module.exports.playAudio = async (req, res) => {
-  const audioFile = `${req.query.audio}.mp3`;
-  // res.type = path.extname(audio);
+  const audioFile = `${req.query.audio}`;
   const pathFile = path.join(`${__dirname}/../file-storage/public`);
   const stream = fs.createReadStream(`${pathFile}/${audioFile}`);
   stream.pipe(res);
+};
+
+module.exports.downloadAudio = async (req, res) => {
+  const audioFile = `${req.query.audio}`;
+  const pathFile = path.join(
+    `${__dirname}/../file-storage/public/${audioFile}`
+  );
+  console.log(audioFile);
+  res.download(pathFile);
 };
 
 module.exports.readText = async (req, res) => {

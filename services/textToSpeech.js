@@ -13,9 +13,20 @@ const path = require('path');
 // Creates a client
 const client = new textToSpeech.TextToSpeechClient();
 
-async function quickStart(textToVocalize) {
+async function textVocalization(textToVocalize) {
   // The text to synthesize
-  const text = textToVocalize;
+  const { message, audioConfig } = textToVocalize;
+
+  const {
+    audioEncoding = 'MP3',
+    speakingRate = 1,
+    pitch = 0,
+    volumeGainDb = -6.0,
+    voiceType = 'Standard',
+    voiceGender = 'A',
+  } = audioConfig;
+
+  const text = message;
 
   // Construct the request
   const request = {
@@ -24,16 +35,22 @@ async function quickStart(textToVocalize) {
     voice: {
       languageCode: 'fr-FR',
       ssmlGender: 'FEMALE',
-      name: 'fr-FR-Wavenet-E',
+      name: `fr-FR-${voiceType}-${voiceGender}`,
     },
     // select the type of audio encoding
 
-    audioConfig: { audioEncoding: 'MP3' },
+    audioConfig: {
+      audioEncoding,
+      speakingRate,
+      pitch,
+      volumeGainDb,
+      effectsProfileId: ['telephony-class-application'],
+    },
   };
 
   // Performs the text-to-speech request
   const [response] = await client.synthesizeSpeech(request);
-  const pathFile = path.join(`${__dirname  }/../file-storage/public`);
+  const pathFile = path.join(`${__dirname}/../file-storage/public`);
 
   // Write the binary audio content to a local file
   const writeFile = util.promisify(fs.writeFile);
@@ -42,11 +59,10 @@ async function quickStart(textToVocalize) {
     .replace(/[^a-z]+/g, '')
     .substring(0, 5);
   await writeFile(
-    `${pathFile}/${audioFileName}.mp3`,
+    `${pathFile}/${audioFileName}.${audioEncoding.toLowerCase()}`,
     response.audioContent,
     'binary'
   );
-  console.log(`Audio content written to file: ${audioFileName}.mp3`);
   return audioFileName;
 }
-module.exports = quickStart;
+module.exports = textVocalization;

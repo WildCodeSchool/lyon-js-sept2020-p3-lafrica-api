@@ -36,6 +36,6 @@ jobs:
           DB_PORT_TEST: 3306
           API_KEY: 'H56RT67FVgf233smn56FGgfPMnbCsz6'
           SESSION_COOKIE_NAME: session_id
-          SESSION_COOKIE_SECRET: <secret>
-          SESSION_COOKIE_DOMAIN: localhost
+          SESSION_COOKIE_SECRET: http://localhost:5000
           CORS_ALLOWED_ORIGINS: http://localhost:3001
+          

@@ -1,7 +1,6 @@
 const fs = require('fs');
 const path = require('path');
 const util = require('util');
-const xlsx = require('xlsx');
 const WordFileReader = require('../helpers/handleReadWordFile');
 const { findAllCampaigns } = require('../models/campaigns');
 const textVocalization = require('../services/textToSpeech');
@@ -64,20 +63,4 @@ module.exports.readText = async (req, res) => {
     console.log(`${req.file.originalname} has successfully been deleted`);
   });
   return res.send(uploadedTextToVocalize);
-};
-
-module.exports.readContacts = async (req, res) => {
-  let contactsArray;
-  try {
-    const workbook = xlsx.readFile(req.file.path);
-    const rawData = workbook.SheetNames;
-    contactsArray = xlsx.utils.sheet_to_json(workbook.Sheets[rawData[0]]);
-  } catch (err) {
-    throw new Error(err);
-  }
-  fs.unlink(req.file.path, (err) => {
-    if (err) throw err;
-    console.log(`${req.file.originalname} has successfully been deleted`);
-  });
-  return res.send(contactsArray);
 };

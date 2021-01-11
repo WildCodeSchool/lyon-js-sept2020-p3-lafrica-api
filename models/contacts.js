@@ -1,7 +1,7 @@
-const db = require("../db");
+const db = require('../db');
 
 module.exports.findAllContacts = (id) => {
-  return db.query("SELECT * FROM contact WHERE id_client_user  = ?", [id]);
+  return db.query('SELECT * FROM contact WHERE id_client_user  = ?', [id]);
 };
 
 module.exports.createContacts = async (newContacts, id) => {

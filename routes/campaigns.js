@@ -5,6 +5,8 @@ const campaignsController = require('../controllers/campaigns');
 const uploadText = require('../middlewares/uploadText');
 
 campaignsRouter.get('/', asyncHandler(campaignsController.getCollection));
+campaignsRouter.post('/', asyncHandler(campaignsController.createCampaign));
+
 campaignsRouter.post(
   '/uploadtext',
   uploadText,

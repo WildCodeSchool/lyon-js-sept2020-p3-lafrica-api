@@ -1,7 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 const util = require('util');
-const { findAllCampaigns } = require('../models/campaigns');
+const { findAllCampaigns, createCampaign } = require('../models/campaigns');
 const textVocalization = require('../services/textToSpeech');
 
 module.exports.getCollection = async (req, res) => {
@@ -38,4 +38,15 @@ module.exports.readText = async (req, res) => {
     console.error(err);
     return res.status(500).send('Something went wrong');
   }
+};
+
+module.exports.createCampaign = async (req, res) => {
+  const campaignDatas = req.body;
+  const data = await createCampaign(campaignDatas);
+  if (data) {
+    return res.status(200).send(data);
+  }
+  return res
+    .status(500)
+    .send('Something went wrong uploading campaigns database');
 };

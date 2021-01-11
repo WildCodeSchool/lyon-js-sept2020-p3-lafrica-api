@@ -4,7 +4,7 @@ const { FileTypeError } = require('../error-types');
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, 'file-storage/public');
+    cb(null, 'file-storage/private');
   },
   filename: (req, file, cb) => {
     cb(null, `${Date.now()}-${file.originalname}`);
@@ -12,18 +12,16 @@ const storage = multer.diskStorage({
 });
 
 const fileFilter = (req, file, cb) => {
-  const filetypes = ['.txt', '.docx'];
-  const mimetypes = /text\/plain||application\/vnd.openxmlformats-officedocument.wordprocessingml.document/;
+  const filetypes = ['.xls', '.xlsx', '.csv'];
+  const mimetypes = /text\/csv||application\/vnd.ms-excel||application\/vnd.openxmlformats-officedocument.spreadsheetml.sheet/;
 
   const mimetype = mimetypes.test(file.mimetype);
   const fileExtension = path.extname(file.originalname).toLocaleLowerCase();
-  let extname;
+  let extname = false;
 
   filetypes.forEach((filetype) => {
     if (fileExtension === filetype) {
       extname = true;
-    } else {
-      extname = false;
     }
   });
 
@@ -34,6 +32,6 @@ const fileFilter = (req, file, cb) => {
   return cb(new FileTypeError(err));
 };
 
-const uploadText = multer({ storage, fileFilter }).single('uploaded_text');
+const uploadText = multer({ storage, fileFilter }).single('uploaded_contacts');
 
 module.exports = uploadText;

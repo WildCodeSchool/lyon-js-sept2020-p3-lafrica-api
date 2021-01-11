@@ -16,9 +16,6 @@ const fileFilter = (req, file, cb) => {
   const mimetypes = /text\/plain||application\/vnd.openxmlformats-officedocument.wordprocessingml.document/;
 
   const mimetype = mimetypes.test(file.mimetype);
-  // const extname = filetypes.test(
-  //   path.extname(file.originalname).toLocaleLowerCase()
-  // );
   const fileExtension = path.extname(file.originalname).toLocaleLowerCase();
   let extname;
 

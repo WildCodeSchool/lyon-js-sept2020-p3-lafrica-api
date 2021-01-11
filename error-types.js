@@ -14,7 +14,7 @@ class ValidationError extends Error {
 }
 class FileTypeError extends Error {
   constructor(errorsByFileType) {
-    super('Invalid filetype was provided');
+    super(errorsByFileType);
     this.errorsByFileType = errorsByFileType;
   }
 }

@@ -34,7 +34,6 @@ const fileFilter = (req, file, cb) => {
     return cb(null, true);
   }
   const err = `File upload only support the following filetypes - ${filetypes}`;
-  console.log('Throw FileTypeError');
   return cb(new FileTypeError(err));
 };
 

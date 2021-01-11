@@ -63,10 +63,10 @@ require('./routes')(app);
 
 // post-route middlewares
 app.set('x-powered-by', false);
+app.use(handleFileTypeError);
 app.use(handleRecordNotFoundError);
 app.use(handleValidationError);
 app.use(handleServerInternalError);
-app.use(handleFileTypeError);
 
 // server setup
 const server = app.listen(SERVER_PORT, () => {

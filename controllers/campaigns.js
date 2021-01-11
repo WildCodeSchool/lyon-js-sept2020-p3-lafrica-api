@@ -1,6 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 const util = require('util');
+const WordFileReader = require('../middlewares/handleReadWordFile');
 const { findAllCampaigns } = require('../models/campaigns');
 const textVocalization = require('../services/textToSpeech');
 
@@ -31,11 +32,31 @@ module.exports.downloadAudio = async (req, res) => {
 
 module.exports.readText = async (req, res) => {
   const readfile = util.promisify(fs.readFile);
-  try {
-    const uploadedTextToVocalize = await readfile(req.file.path, 'utf-8');
-    return res.send(uploadedTextToVocalize);
-  } catch (err) {
-    console.error(err);
-    return res.status(500).send('Something went wrong');
+  const fileExtension = path.extname(req.file.path);
+  let uploadedTextToVocalize;
+  switch (fileExtension) {
+    case '.txt':
+      try {
+        uploadedTextToVocalize = await readfile(req.file.path, 'utf-8');
+        break;
+      } catch (err) {
+        console.error(err);
+        return res
+          .status(500)
+          .send('Something went wrong in reading .txt file');
+      }
+    case '.docx':
+      try {
+        uploadedTextToVocalize = await WordFileReader.extract(req.file.path);
+      } catch (err) {
+        console.error(err);
+        return res
+          .status(500)
+          .send('Something went wrong in reading .docx file');
+      }
+      break;
+    default:
+      return null;
   }
+  return res.send(uploadedTextToVocalize);
 };

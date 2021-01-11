@@ -16,6 +16,7 @@ const sessionStore = require('./sessionStore');
 const handleRecordNotFoundError = require('./middlewares/handleRecordNotFoundError');
 const handleValidationError = require('./middlewares/handleValidationError');
 const handleServerInternalError = require('./middlewares/handleServerInternalError');
+const handleFileTypeError = require('./middlewares/handleFileTypeError');
 
 const app = express();
 
@@ -65,6 +66,7 @@ app.set('x-powered-by', false);
 app.use(handleRecordNotFoundError);
 app.use(handleValidationError);
 app.use(handleServerInternalError);
+app.use(handleFileTypeError);
 
 // server setup
 const server = app.listen(SERVER_PORT, () => {

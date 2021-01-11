@@ -16,7 +16,7 @@ module.exports.vocalization = async (req, res) => {
 
 module.exports.playAudio = async (req, res) => {
   const audioFile = `${req.query.audio}`;
-  const pathFile = path.join(`${__dirname}/../file-storage/public`);
+  const pathFile = path.join(`${__dirname}/../file-storage/private`);
   const stream = fs.createReadStream(`${pathFile}/${audioFile}`);
   stream.pipe(res);
 };
@@ -24,7 +24,7 @@ module.exports.playAudio = async (req, res) => {
 module.exports.downloadAudio = async (req, res) => {
   const audioFile = `${req.query.audio}`;
   const pathFile = path.join(
-    `${__dirname}/../file-storage/public/${audioFile}`
+    `${__dirname}/../file-storage/private/${audioFile}`
   );
   res.download(pathFile);
 };

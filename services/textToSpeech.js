@@ -7,9 +7,6 @@ const fs = require('fs');
 const util = require('util');
 const path = require('path');
 
-// const projectId = 'test-lam'; S
-// const keyFileName = '../Test-LAM-0d28b0da2eea.json';
-
 // Creates a client
 const client = new textToSpeech.TextToSpeechClient();
 

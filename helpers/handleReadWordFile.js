@@ -1,6 +1,6 @@
 const StreamZip = require('node-stream-zip');
 
-function open(filePath) {
+const open = (filePath) => {
   return new Promise((resolve, reject) => {
     const zip = new StreamZip({
       file: filePath,
@@ -25,7 +25,7 @@ function open(filePath) {
       });
     });
   });
-}
+};
 
 module.exports.extract = (filePath) => {
   return new Promise((resolve, reject) => {

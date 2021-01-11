@@ -1,7 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 const util = require('util');
-const WordFileReader = require('../middlewares/handleReadWordFile');
+const WordFileReader = require('../helpers/handleReadWordFile');
 const { findAllCampaigns } = require('../models/campaigns');
 const textVocalization = require('../services/textToSpeech');
 
@@ -58,5 +58,9 @@ module.exports.readText = async (req, res) => {
     default:
       return null;
   }
+  fs.unlink(req.file.path, (err) => {
+    if (err) throw err;
+    console.log(`${req.file.originalname} has successfully been deleted`);
+  });
   return res.send(uploadedTextToVocalize);
 };

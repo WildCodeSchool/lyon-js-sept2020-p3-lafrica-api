@@ -11,11 +11,14 @@ module.exports.login = async (req, res) => {
     }
     req.session.cookie.maxAge = 60 * 60 * 1000;
     req.session.userId = user.id;
-    console.log(req.session);
     req.session.save((err) => {
       if (err) return res.sendStatus(500);
-      console.log(user.id);
-      return res.status(200).json(user.id);
+      const userDetails = {
+        id: user.id,
+        firstname: user.firstname,
+        lastname: user.lastname,
+      };
+      return res.status(200).json(userDetails);
     });
   } else {
     res.sendStatus(401);

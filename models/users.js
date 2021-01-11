@@ -1,4 +1,5 @@
 const argon2 = require('argon2');
+
 const db = require('../db');
 const { ValidationError, RecordNotFoundError } = require('../error-types');
 

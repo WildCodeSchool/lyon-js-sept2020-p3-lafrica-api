@@ -24,7 +24,11 @@ module.exports.createCampaign = async (campaignDatas) => {
         campaign_date_formated,
       ]
     );
-    return data;
+    const insertedContact = await db.query(
+      'SELECT * FROM mailing_campaign WHERE id = ?',
+      [data.insertId]
+    );
+    return insertedContact[0];
   } catch (err) {
     return err;
   }

@@ -16,6 +16,7 @@ const sessionStore = require('./sessionStore');
 const handleRecordNotFoundError = require('./middlewares/handleRecordNotFoundError');
 const handleValidationError = require('./middlewares/handleValidationError');
 const handleServerInternalError = require('./middlewares/handleServerInternalError');
+const campaignSendingDateCheck = require('./scripts/campaignSendingDateCheck');
 
 const app = express();
 app.set('trust proxy', 1);
@@ -88,5 +89,12 @@ process.on('beforeExit', () => {
     if (error) console.error(JSON.stringify(error), error.stack);
   });
 });
+
+// scripts
+// setInterval(() => {
+//   campaignSendingDateCheck.campaignSendingDateCheck();
+// }, 5000);
+
+// campaignSendingDateCheck.campaignSendingDateCheck();
 
 module.exports = server;

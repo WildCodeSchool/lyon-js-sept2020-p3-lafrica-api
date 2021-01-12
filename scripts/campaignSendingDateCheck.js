@@ -3,17 +3,7 @@ const FormData = require('form-data');
 const fs = require('fs');
 const path = require('path');
 const db = require('../db');
-
-require('dotenv').config();
-
-function getEnv(varibale) {
-  const value = process.env[varibale];
-  if (typeof value === 'undefined') {
-    console.warn(`Seems like the variable "${varibale}" is not set in the environment.
-    Did you forget to execute "cp .env.sample .env" and adjust variables in the .env file to match your own environment ?`);
-  }
-  return value;
-}
+const { LAM_API_LOGIN, LAM_API_PASSWORD } = require('../env');
 
 module.exports.campaignSendingDateCheck = async () => {
   let serviceIsRunning = false;
@@ -53,8 +43,8 @@ module.exports.campaignSendingDateCheck = async () => {
           vocalisationFileName
         );
 
-        form.append('login', getEnv('LAM_API_login'));
-        form.append('password', getEnv('LAM_API_password'));
+        form.append('login', LAM_API_LOGIN);
+        form.append('password', LAM_API_PASSWORD);
         form.append('filename', fs.createReadStream(jsonPath));
 
         axios
@@ -69,8 +59,8 @@ module.exports.campaignSendingDateCheck = async () => {
             setTimeout(() => {
               axios
                 .post('https://voice.lafricamobile.com/api/Message', {
-                  login: getEnv('LAM_API_login'),
-                  password: getEnv('LAM_API_password'),
+                  login: LAM_API_LOGIN,
+                  password: LAM_API_PASSWORD,
                   filename: clientFileName,
                   serverfilename: serverFileName,
                   campagnename: allCampaignsList[i].name,

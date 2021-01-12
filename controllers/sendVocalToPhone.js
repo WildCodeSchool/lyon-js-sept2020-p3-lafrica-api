@@ -3,7 +3,6 @@ const FormData = require('form-data');
 const fs = require('fs');
 const path = require('path');
 
-// const sendVocalToPhone = require('../models/sendVocalToPhone');
 require('dotenv').config();
 
 function getEnv(varibale) {

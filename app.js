@@ -17,6 +17,7 @@ const handleRecordNotFoundError = require('./middlewares/handleRecordNotFoundErr
 const handleValidationError = require('./middlewares/handleValidationError');
 const handleServerInternalError = require('./middlewares/handleServerInternalError');
 const campaignSendingDateCheck = require('./scripts/campaignSendingDateCheck');
+const handleFileTypeError = require('./middlewares/handleFileTypeError');
 
 const app = express();
 app.set('trust proxy', 1);
@@ -64,6 +65,7 @@ require('./routes')(app);
 
 // post-route middlewares
 app.set('x-powered-by', false);
+app.use(handleFileTypeError);
 app.use(handleRecordNotFoundError);
 app.use(handleValidationError);
 app.use(handleServerInternalError);

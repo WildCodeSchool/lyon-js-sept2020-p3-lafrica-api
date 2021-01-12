@@ -1,7 +1,7 @@
-const db = require('../db');
+const db = require("../db");
 
 module.exports.findAllCampaigns = (id) => {
-  return db.query('SELECT * FROM mailing_campaign WHERE id = ?', [id]);
+  return db.query("SELECT * FROM mailing_campaign WHERE id = ?", [id]);
 };
 
 module.exports.createCampaign = async (campaignDatas) => {

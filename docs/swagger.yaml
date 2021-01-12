@@ -20,6 +20,52 @@ paths:
             type: 'array'
             items:
               $ref: '#/definitions/Thing'
+  /auth/login:
+    post:
+      summary: User authentification
+      consumes:
+        - application/json
+      parameters:
+        - in: body
+          name: user
+          schema:
+            type: object
+            required:
+              - email
+              - password
+            properties:
+              email:
+                type: string
+              password:
+                type: string
+      responses:
+        200:
+          description: User authentificated
+          schema:
+            type: object
+            properties:
+              id:
+                type: integer
+                description: The user ID.
+              firstname:
+                type: string
+                description: The user firstname.
+              lastname:
+                type: string
+                description: The user lastname.
+
+        401:
+          description: 'Invalid credentials'
+    $ref: '#/definitions/Login'
+
+  /auth/logout:
+    get: 
+      summary: User logout
+      responses:
+        200:
+          description: User logged out
+        
+      
 definitions:
   Thing:
     properties:

@@ -16,6 +16,7 @@ const sessionStore = require('./sessionStore');
 const handleRecordNotFoundError = require('./middlewares/handleRecordNotFoundError');
 const handleValidationError = require('./middlewares/handleValidationError');
 const handleServerInternalError = require('./middlewares/handleServerInternalError');
+const handleFileTypeError = require('./middlewares/handleFileTypeError');
 
 const app = express();
 
@@ -62,6 +63,7 @@ require('./routes')(app);
 
 // post-route middlewares
 app.set('x-powered-by', false);
+app.use(handleFileTypeError);
 app.use(handleRecordNotFoundError);
 app.use(handleValidationError);
 app.use(handleServerInternalError);

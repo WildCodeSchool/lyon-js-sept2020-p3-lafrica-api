@@ -49,7 +49,7 @@ module.exports.campaignSendingDateCheck = async () => {
           __dirname,
           '..',
           'file-storage',
-          'public',
+          'private',
           vocalisationFileName
         );
 

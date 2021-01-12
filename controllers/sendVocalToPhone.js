@@ -23,7 +23,7 @@ module.exports.test = async (req) => {
     __dirname,
     '..',
     'file-storage',
-    'public',
+    'private',
     vocalisationFileName
   );
 

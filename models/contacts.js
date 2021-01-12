@@ -1,4 +1,4 @@
-const db = require("../db");
+const db = require('../db');
 
 /* const findOneContact = async (contactId) => {
   const contact = db.query
@@ -14,13 +14,15 @@ const db = require("../db");
 }; */
 
 module.exports.findAllContacts = (id) => {
-  return db.query("SELECT * FROM contact WHERE id_client_user  = ?", [id]);
+  return db.query('SELECT * FROM contact WHERE id_client_user  = ?', [id]);
 };
 
 module.exports.createContacts = async (newContacts, currentUserId) => {
   const createdContacts = await Promise.all(
     newContacts.map(async (contact) => {
-      const { lastname, firstname, phone_number } = contact;
+      const { lastname, firstname } = contact;
+      let { phone_number } = contact;
+      phone_number = phone_number.toString();
       const result = await db
         .query(
           `INSERT INTO contact (lastname, firstname, phone_number, id_client_user) VALUES (?, ?, ?, ?)`,

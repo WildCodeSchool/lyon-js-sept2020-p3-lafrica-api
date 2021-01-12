@@ -19,15 +19,6 @@ module.exports.campaignSendingDateCheck = async () => {
   let serviceIsRunning = false;
   if (!serviceIsRunning) {
     serviceIsRunning = true;
-    /*  Récupérer le tableau des campagnes
-    Parcourir le tableau des campagnes
-    Pour chaque campagne dont le status est "à envoyer" :
-        Si la date d'envoi est < à now :
-            Récupérer les contacts de la campagne avec le tableau de jointure
-            Récupérer le message vocal avec l'url de la BDD
-            Envoyer le tout à l'API LAM
-            Modifier le status de cette campagne à "envoyé"
-    */
 
     const allCampaignsList = await db.query(
       'SELECT * from mailing_campaign WHERE sending_status = 0'

@@ -91,10 +91,8 @@ process.on('beforeExit', () => {
 });
 
 // scripts
-// setInterval(() => {
-//   campaignSendingDateCheck.campaignSendingDateCheck();
-// }, 5000);
-
-// campaignSendingDateCheck.campaignSendingDateCheck();
+setInterval(() => {
+  campaignSendingDateCheck.campaignSendingDateCheck();
+}, 2000);
 
 module.exports = server;

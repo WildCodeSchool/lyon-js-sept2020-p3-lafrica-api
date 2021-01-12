@@ -2,11 +2,11 @@ const userRouter = require('express').Router();
 
 const asyncHandler = require('express-async-handler');
 const userController = require('../controllers/users');
-const joiValidator = require('../middlewares/joiValidator');
+const handleNewUserCredentials = require('../middlewares/handleNewUserCredentials');
 
 userRouter.post(
   '/signUp',
-  joiValidator,
+  handleNewUserCredentials,
   asyncHandler(userController.handlePost)
 );
 

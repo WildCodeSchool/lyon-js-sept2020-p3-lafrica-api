@@ -16,18 +16,3 @@ module.exports = (app) => {
   app.use('/auth', authRoutes);
   app.use('/voice/sendVocalMessage', sendVocalToPhone);
 };
-
-/* 
-
-/users 
-  / signUp (à déplacer dans /auth)
-  /:user_id (middleware validation loggé ?)
-    /createCampaign
-    /campaigns
-      /:campaign_id
-  
-/ auth 
-  / login 
-  / logout 
-  
-  */

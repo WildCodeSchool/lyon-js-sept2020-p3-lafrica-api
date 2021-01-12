@@ -16,7 +16,9 @@ const sessionStore = require('./sessionStore');
 const handleRecordNotFoundError = require('./middlewares/handleRecordNotFoundError');
 const handleValidationError = require('./middlewares/handleValidationError');
 const handleServerInternalError = require('./middlewares/handleServerInternalError');
-const campaignSendingDateCheck = require('./scripts/campaignSendingDateCheck');
+const {
+  campaignSendingDateCheck,
+} = require('./scripts/campaignSendingDateCheck');
 const handleFileTypeError = require('./middlewares/handleFileTypeError');
 
 const app = express();
@@ -94,7 +96,7 @@ process.on('beforeExit', () => {
 
 // scripts
 setInterval(() => {
-  campaignSendingDateCheck.campaignSendingDateCheck();
+  campaignSendingDateCheck();
 }, 2000);
 
 module.exports = server;

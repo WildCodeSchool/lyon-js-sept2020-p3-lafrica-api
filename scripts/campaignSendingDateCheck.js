@@ -9,7 +9,6 @@ module.exports.campaignSendingDateCheck = async () => {
   let serviceIsRunning = false;
   if (!serviceIsRunning) {
     serviceIsRunning = true;
-
     const allCampaignsList = await db.query(
       'SELECT * from mailing_campaign WHERE sending_status = 0'
     );

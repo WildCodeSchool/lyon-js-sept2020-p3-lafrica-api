@@ -7,7 +7,9 @@ module.exports.findAllContacts = (id) => {
 module.exports.createContacts = async (newContacts, id) => {
   const createdContacts = await Promise.all(
     newContacts.map(async (contact) => {
-      const { lastname, firstname, phone_number } = contact;
+      const { lastname, firstname } = contact;
+      let { phone_number } = contact;
+      phone_number = phone_number.toString();
       const result = await db
         .query(
           `INSERT INTO contact (lastname, firstname, phone_number, id_client_user) VALUES (?, ?, ?, ?)`,

@@ -1,8 +1,7 @@
 swagger: '2.0'
 info:
   version: '1.0.0'
-  title: 'P3 API'
-  description: 'Simple API to manage things'
+  title: 'LAfrica Mobile Text to Voice API'
 host: 'localhost:5000'
 basePath: '/'
 consumes:
@@ -10,16 +9,55 @@ consumes:
 produces:
   - 'application/json'
 paths:
-  /things:
-    get:
-      summary: 'Get a list of things'
-      responses:
-        '200':
-          description: 'Everything went well'
+  /auth/login:
+    post:
+      summary: User authentification
+      consumes:
+        - application/json
+      parameters:
+        - in: body
+          name: user
           schema:
-            type: 'array'
-            items:
-              $ref: '#/definitions/Thing'
+            type: object
+            required:
+              - email
+              - password
+            properties:
+              email:
+                type: string
+                example: francois.dupont@email.com
+
+              password:
+                type: string
+                example: Password!12345
+      responses:
+        200:
+          description: User authentificated
+          schema:
+            type: object
+            properties:
+              id:
+                type: integer
+                description: The user ID.
+              firstname:
+                type: string
+                description: The user firstname.
+              lastname:
+                type: string
+                description: The user lastname.
+
+        401:
+          description: 'Invalid credentials'
+
+        400:
+          description: Calling this route with an empty request body (JSON) is a no-op.
+
+  /auth/logout:
+    get: 
+      summary: User logout
+      responses:
+        200:
+          description: User logged out
 
   /users/signUp:
     post:
@@ -87,56 +125,6 @@ paths:
             description: The information provided did not match the requirements
 
     # $ref: '#/definitions/Registration'
-
-  /auth/login:
-    post:
-      summary: User authentification
-      consumes:
-        - application/json
-      parameters:
-        - in: body
-          name: user
-          schema:
-            type: object
-            required:
-              - email
-              - password
-            properties:
-              email:
-                type: string
-                example: francois.dupont@email.com
-
-              password:
-                type: string
-                example: Password!12345
-      responses:
-        200:
-          description: User authentificated
-          schema:
-            type: object
-            properties:
-              id:
-                type: integer
-                description: The user ID.
-              firstname:
-                type: string
-                description: The user firstname.
-              lastname:
-                type: string
-                description: The user lastname.
-
-        401:
-          description: 'Invalid credentials'
-
-        400:
-          description: Calling this route with an empty request body (JSON) is a no-op.
-
-  /auth/logout:
-    get: 
-      summary: User logout
-      responses:
-        200:
-          description: User logged out
         
   
   /users/{user_id}/campaigns:
@@ -181,7 +169,7 @@ paths:
                   description: Status of the campaign (0 if pending, 1 if completed)
 
         401:
-          description: 'Unhautorized. The user ID does not match the user identified by the cookie session or the current user is not allowed to get the user campaigns.'
+          description: 'Unhautorized. The user is not logged in, or the user ID does not match the user identified by the cookie session or the current user is not allowed to get the user campaigns.'
 
     post:
       summary: Create a campaign
@@ -240,53 +228,155 @@ paths:
                 description: Status of the campaign (0 if pending, 1 if completed)
 
         401:
-          description: 'Unhautorized. The user ID does not match the user identified by the cookie session or the current user.'
+          description: 'Unhautorized. The user is not logged in, or the user ID does not match the user identified by the cookie session or the current user.'
 
         400:
           description: Calling this route with an empty request body (JSON) is a no-op.
     
-  /users/{users_id}/uploadtext:
+  /users/{users_id}/campaigns/uploadtext:
     post:
-      summary: Upload a text to vocalize it 
+      summary: Upload a .txt or .docx file 
       consumes:
         - multipart/form-data
       parameters:
+        - in: path
+          name: user_id
+          type: integer
+          required: true
+          description: Numeric ID of the user to get.
+        - in: formData
+          name: uploaded_text
+          required: true
+          type: file
+          description: The text message to upload. The format supported are .txt and .docx.
+
+      responses:
+        200:
+          description: Upload success
+          schema:
+            type: string
+            description: The text message uploaded and read by the server.
+
+        401:
+          description: 'Unhautorized. The user is not logged in, or the user ID does not match the user identified by the cookie session or the current user.'
+          
+        404:
+          description: 'File upload only support the following filetypes: .txt, .docx'
+
+        500:
+          description: 'Something went wrong in reading the file.'
+
+  /users/{users_id}/campaigns/TTS:
+    post:
+      summary: Vocalization of a text message
+      consumes:
+        - application/json
+      produces:
+        - text/plain
+      parameters:
+        - in: path
+          name: user_id
+          type: integer
+          required: true
+          description: Numeric ID of the user to get.
         - in: body
-          name: user
+          name: Audio configuration
           schema:
             type: object
             required:
-              - email
-              - password
+              - message
             properties:
-              email:
+              message:
                 type: string
-                example: francois.dupont@email.com
+                example: Messsage to vocalize
+                description: Message to vocalize
+              audioConfig:
+                type: object
+                properties: 
+                  encoding: 
+                    type: string
+                    description: 'Optionnal. Format of the audio file: MP3 for .mp3, LINEAR16 for .wav. Default is MP3'
+                    default: MP3
+                    enum: [MP3, LINEAR16] 
+                  speakingRate: 
+                    type: integer
+                    description: Optional. Speaking rate/speed, in the range [0.25, 4.0]. 1.0 is the normal native speed supported by the specific voice. 2.0 is twice as fast, and 0.5 is half as fast. If unset(0.0), defaults to the native 1.0 speed. Any other values < 0.25 or > 4.0 will return an error.
+                    default: 1 
+                  pitch: 
+                    type: integer
+                    description: Optional. Speaking pitch, in the range [-20.0, 20.0]. 20 means increase 20 semitones from the original pitch. -20 means decrease 20 semitones from the original pitch.
+                    default: 0 
+                  volumeGainDb: 
+                    type: integer
+                    description: Optional. Volume gain (in dB) of the normal native volume supported by the specific voice, in the range [-96.0, 16.0]. If unset, or set to a value of 0.0 (dB), will play at normal native signal amplitude.  Strongly recommend not to exceed +10 (dB) as there's usually no effective increase in loudness for any value greater than that.
+                    default: -6.0 
+                  voiceType: 
+                    type: string
+                    description: Optional. WaveNet is a more realistic voice. When enabled, this option results in an additional billing cost. 
+                    default: Standard
+                    enum: ['Standard', 'WaveNet']
+                  voiceGender: 
+                    type: string
+                    description: Optional. Configuration of the voice gender. A, C and E are women voices, B and D men voices.
+                    default: A
+                    enum: ['A', 'B', 'C', 'D', 'E']
 
-              password:
-                type: string
-                example: Password!12345
       responses:
         200:
-          description: User authentificated
+          description: Vocalization success
           schema:
-            type: object
-            properties:
-              id:
-                type: integer
-                description: The user ID.
-              firstname:
-                type: string
-                description: The user firstname.
-              lastname:
-                type: string
-                description: The user lastname.
+            type: string
+            description: Name of the audio file.
 
         401:
-          description: 'Invalid credentials'
+          description: 'Unhautorized. The user is not logged in, or the user ID does not match the user identified by the cookie session or the current user.'
 
-        400:
-          description: Calling this route with an empty request body (JSON) is a no-op.      
+
+  /users/{user_id}/campaigns/audio?audio=file.mp3:
+    get:
+      summary: Get a stream of an audio file.
+      parameters:
+        - in: path
+          name: user_id
+          type: integer
+          required: true
+          description: Numeric ID of the user to get.
+        - in: query
+          name: audio
+          type: string
+          required: true
+          description: Audio file name and extension (i.e file.mp3)
+      produces : 
+            - audio
+      responses:
+        200:
+          description: A stream of the audio file requested.
+
+        401:
+          description: 'Unhautorized. The user is not logged in, or the user ID does not match the user identified by the cookie session or the current user is not allowed to get the user campaigns.'
+
+  /users/{user_id}/campaigns/downloadaudio?audio=file.mp3:
+    get:
+      summary: Download an audio file.
+      parameters:
+        - in: path
+          name: user_id
+          type: integer
+          required: true
+          description: Numeric ID of the user to get.
+        - in: query
+          name: audio
+          type: string
+          required: true
+          description: Audio file name and extension (i.e file.mp3)
+      produces : 
+            - audio
+      responses:
+        200:
+          description: Downloads the audio file requested.
+
+        401:
+          description: 'Unhautorized. The user is not logged in, or the user ID does not match the user identified by the cookie session or the current user is not allowed to get the user campaigns.'
 
 definitions:
   Sign Up:

@@ -17,13 +17,11 @@ const fileFilter = (req, file, cb) => {
 
   const mimetype = mimetypes.test(file.mimetype);
   const fileExtension = path.extname(file.originalname).toLocaleLowerCase();
-  let extname;
+  let extname = false;
 
   filetypes.forEach((filetype) => {
     if (fileExtension === filetype) {
       extname = true;
-    } else {
-      extname = false;
     }
   });
 

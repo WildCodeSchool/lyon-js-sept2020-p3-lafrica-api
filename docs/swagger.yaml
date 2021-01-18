@@ -86,8 +86,8 @@ paths:
               phone_number:
                 type: string
                 pattern: /^(\+|00)[0-9]?()[0-9](\s|\S)(\d[0-9]{0,})$/
-                description: The phone number must be preceded by the phone indicator (i.e. 33 for France, 221 for Senegal etc.) 
-                example: "33642519412"
+                description: The phone number must be preceded by the phone indicator (i.e. +33 or 0033 for France, +221 for Senegal etc.) 
+                example: "+33642519412"
               email:
                 type: string
                 pattern : ^(([^<>()[\]\\.,;:\s@“]+(\.[^<>()[\]\\.,;:\s@“]+)*)|(“.+“))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$
@@ -233,7 +233,7 @@ paths:
         400:
           description: Calling this route with an empty request body (JSON) is a no-op.
     
-  /users/{users_id}/campaigns/uploadtext:
+  /users/{user_id}/campaigns/uploadtext:
     post:
       summary: Upload a .txt or .docx file 
       consumes:
@@ -266,7 +266,7 @@ paths:
         500:
           description: 'Something went wrong in reading the file.'
 
-  /users/{users_id}/campaigns/TTS:
+  /users/{user_id}/campaigns/TTS:
     post:
       summary: Vocalization of a text message
       consumes:
@@ -323,7 +323,7 @@ paths:
 
       responses:
         200:
-          description: Vocalization success
+          description: Vocalization success. Returns the name of the audio file.
           schema:
             type: string
             description: Name of the audio file.

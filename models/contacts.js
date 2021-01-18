@@ -1,7 +1,7 @@
-const db = require('../db');
+const db = require("../db");
 
-/* const findOneContact = async (contactId) => {
-  const contact = db.query
+const findOneContact = async (contactId) => {
+  const contact = db
     .query("SELECT * FROM contact WHERE id = ?", [contactId])
     .catch((err) => {
       console.log(err);
@@ -11,10 +11,10 @@ const db = require('../db');
     return contact;
   }
   return null;
-}; */
+};
 
 module.exports.findAllContacts = (id) => {
-  return db.query('SELECT * FROM contact WHERE id_client_user  = ?', [id]);
+  return db.query("SELECT * FROM contact WHERE id_client_user  = ?", [id]);
 };
 
 module.exports.createContacts = async (newContacts, currentUserId) => {
@@ -52,16 +52,24 @@ module.exports.createContacts = async (newContacts, currentUserId) => {
 
 module.exports.modifyContact = async (newAtttributes, contactId) => {
   const { lastname, firstname, phone_number } = newAtttributes;
-  console.log(newAtttributes);
-  console.log(contactId);
   await db
     .query(
-      "UPDATE * FROM contact SET lastname = ?, firstname = ?, phone_number = ? WHERE id = ?",
+      "UPDATE contact SET lastname = ?, firstname = ?, phone_number = ? WHERE id = ?",
       [lastname, firstname, phone_number, contactId]
     )
     .catch((err) => {
       console.log(err);
       throw err;
     });
-  /* findOneContact(contactId) */
+  return findOneContact(contactId);
+};
+
+module.exports.deleteContact = async (contactId) => {
+  await db
+    .query("DELETE FROM contact WHERE id = ?", [contactId])
+    .catch((err) => {
+      console.log(err);
+      throw err;
+    });
+  return findOneContact(contactId);
 };

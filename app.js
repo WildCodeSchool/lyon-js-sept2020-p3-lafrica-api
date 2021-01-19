@@ -21,7 +21,7 @@ const handleFileTypeError = require('./middlewares/handleFileTypeError');
 const app = express();
 
 // docs
-if (!inProdEnv && !inTestEnv) {
+if (!inTestEnv) {
   const swaggerDocument = YAML.load('./docs/swagger.yaml');
   app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 }

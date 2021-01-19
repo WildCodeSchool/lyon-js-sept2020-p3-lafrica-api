@@ -19,6 +19,7 @@ const handleServerInternalError = require('./middlewares/handleServerInternalErr
 const handleFileTypeError = require('./middlewares/handleFileTypeError');
 
 const app = express();
+app.set('trust proxy', 1);
 
 // docs
 if (!inTestEnv) {

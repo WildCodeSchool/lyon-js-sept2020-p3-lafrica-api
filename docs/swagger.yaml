@@ -85,9 +85,9 @@ paths:
                 example: Dupont
               phone_number:
                 type: string
-                pattern: /^(\+|00)[0-9]?()[0-9](\s|\S)(\d[0-9]{0,})$/
-                description: The phone number must be preceded by the phone indicator (i.e. +33 or 0033 for France, +221 for Senegal etc.) 
-                example: "+33642519412"
+                pattern: /^[0-9]?()[0-9](\s|\S)(\d[0-9]{0,})$/
+                description: The phone number must be preceded by the phone indicator (i.e. 33 for France, 221 for Senegal etc.) 
+                example: "33642519412"
               email:
                 type: string
                 pattern : ^(([^<>()[\]\\.,;:\s@“]+(\.[^<>()[\]\\.,;:\s@“]+)*)|(“.+“))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$
@@ -123,6 +123,9 @@ paths:
       
         401:
             description: The information provided did not match the requirements
+
+        422:
+            description: Email already exists in database
 
     # $ref: '#/definitions/Registration'
         
@@ -387,7 +390,7 @@ definitions:
         type: 'string'
       phone_number:
         type: string
-        pattern: /^(\+|00)[0-9]?()[0-9](\s|\S)(\d[0-9]{0,})$/
+        pattern: /^[0-9]?()[0-9](\s|\S)(\d[0-9]{0,})$/
         description: The phone number must be preceded by the phone indicator (i.e. 33 for France, 221 for Senegal etc.) 
       email:
         type: 'string'

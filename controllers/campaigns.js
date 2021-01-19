@@ -1,7 +1,11 @@
 const fs = require('fs');
 const path = require('path');
 const util = require('util');
-const { findAllCampaigns, createCampaign } = require('../models/campaigns');
+const {
+  findAllCampaigns,
+  createCampaign,
+  assignContactsToCampaign,
+} = require('../models/campaigns');
 const WordFileReader = require('../helpers/handleReadWordFile');
 const textVocalization = require('../services/textToSpeech');
 
@@ -66,10 +70,13 @@ module.exports.readText = async (req, res) => {
 };
 
 module.exports.createCampaign = async (req, res) => {
-  const campaignDatas = req.body;
+  const campaignDatas = req.body[0];
+  const contactsList = req.body[1];
+
   const data = await createCampaign(campaignDatas);
   if (data) {
-    return res.status(200).send(data);
+    const data2 = await assignContactsToCampaign(contactsList, data.id);
+    return res.status(200).send(data2);
   }
   return res
     .status(500)

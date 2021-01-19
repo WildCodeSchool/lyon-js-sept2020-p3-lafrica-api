@@ -34,3 +34,29 @@ module.exports.createCampaign = async (campaignDatas) => {
     return err;
   }
 };
+
+module.exports.assignContactsToCampaign = async (contactsList, campaignId) => {
+  console.log(contactsList);
+  const contactsAdded = [];
+  try {
+    // for (let i = 0; i < contactsList.length; i += 1)
+    contactsList.forEach(async (contact) => {
+      // eslint-disable-next-line no-lone-blocks
+      {
+        await db.query(
+          'INSERT INTO contact_in_mailing_campaign (contact_id,mailing_campaign_id,sending_status) VALUES (?, ?, null)',
+          [contact.id, campaignId]
+        );
+        const contactAssignment = await db.query(
+          'SELECT * FROM contact_in_mailing_campaign WHERE contact_id = ?',
+          [contact.id]
+        );
+        contactsAdded.push(contactAssignment[0]);
+      }
+    });
+
+    return contactsAdded;
+  } catch (err) {
+    return err;
+  }
+};

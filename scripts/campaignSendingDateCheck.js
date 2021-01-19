@@ -12,7 +12,9 @@ module.exports.campaignSendingDateCheck = async () => {
     const allCampaignsList = await db.query(
       'SELECT * from mailing_campaign WHERE sending_status = 0'
     );
-
+    if (allCampaignsList.length === 0) {
+      return null;
+    }
     for (let i = 0; i < allCampaignsList.length; i += 1) {
       // Date and hour initialization
       const dateNow = new Date();
@@ -78,7 +80,7 @@ module.exports.campaignSendingDateCheck = async () => {
           });
       }
     }
-
     serviceIsRunning = false;
   }
+  return 'campaign sent';
 };

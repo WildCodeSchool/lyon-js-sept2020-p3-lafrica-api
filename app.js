@@ -97,6 +97,6 @@ process.on('beforeExit', () => {
 // scripts
 setInterval(() => {
   campaignSendingDateCheck();
-}, 2000);
+}, 60000);
 
 module.exports = server;

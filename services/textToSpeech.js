@@ -18,7 +18,7 @@ async function textVocalization(textToVocalize) {
     audioEncoding = 'MP3',
     speakingRate = 1,
     pitch = 0,
-    volumeGainDb = -6.0,
+    volumeGainDb = 0,
     voiceType = 'Standard',
     voiceGender = 'A',
   } = audioConfig;

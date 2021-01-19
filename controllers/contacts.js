@@ -17,6 +17,12 @@ module.exports.getCollection = async (req, res) => {
 
 module.exports.createContacts = async (req, res) => {
   const data = await createContacts(req.body, req.currentUser.id);
+  if (
+    data.length === 1 &&
+    data[0] === "phone number already exists for the current user"
+  ) {
+    return res.status(400).send(data[0]);
+  }
   if (data) {
     return res.status(201).json(data);
   }

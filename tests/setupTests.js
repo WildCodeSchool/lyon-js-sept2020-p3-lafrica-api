@@ -17,4 +17,5 @@ afterEach(deleteAllDBData);
 afterAll(async () => {
   await db.closeConnection();
   await closeApp();
+  console.log('plop');
 });

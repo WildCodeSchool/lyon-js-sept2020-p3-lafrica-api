@@ -4,7 +4,7 @@ const schema = Joi.object({
   firstnameValidator: Joi.string().max(50).required(),
   lastnameValidator: Joi.string().max(50).required(),
   phone_numberValidator: Joi.string().pattern(
-    new RegExp(/^(\+|00)[0-9]?()[0-9](\s|\S)(\d[0-9]{0,})$/)
+    new RegExp(/^[0-9]?()[0-9](\s|\S)(\d[0-9]{0,})$/)
   ),
   emailValidator: Joi.string()
     .required()

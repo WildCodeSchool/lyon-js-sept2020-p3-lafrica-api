@@ -2,7 +2,7 @@ swagger: '2.0'
 info:
   version: '1.0.0'
   title: 'LAfrica Mobile Text to Voice API'
-host: text2voice.duckdns.org
+host: api.text2voice.duckdns.org
 basePath: '/'
 consumes:
   - 'application/json'

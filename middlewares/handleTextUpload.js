@@ -12,8 +12,8 @@ const storage = multer.diskStorage({
 });
 
 const fileFilter = (req, file, cb) => {
-  const filetypes = ['.txt', '.docx', '.xls', '.xlsx', '.csv'];
-  const mimetypes = /text\/plain||application\/vnd.openxmlformats-officedocument.wordprocessingml.document||text\/csv||application\/vnd.ms-excel||application\/vnd.openxmlformats-officedocument.spreadsheetml.sheet/;
+  const filetypes = ['.txt', '.docx'];
+  const mimetypes = /text\/plain||application\/vnd.openxmlformats-officedocument.wordprocessingml.document/;
 
   const mimetype = mimetypes.test(file.mimetype);
   const fileExtension = path.extname(file.originalname).toLocaleLowerCase();
@@ -22,7 +22,9 @@ const fileFilter = (req, file, cb) => {
   filetypes.forEach((filetype) => {
     if (fileExtension === filetype) {
       extname = true;
+      return extname;
     }
+    return extname;
   });
 
   if (mimetype && extname) {

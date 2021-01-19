@@ -7,9 +7,6 @@ const fs = require('fs');
 const util = require('util');
 const path = require('path');
 
-// const projectId = 'test-lam'; S
-// const keyFileName = '../Test-LAM-0d28b0da2eea.json';
-
 // Creates a client
 const client = new textToSpeech.TextToSpeechClient();
 
@@ -21,7 +18,7 @@ async function textVocalization(textToVocalize) {
     audioEncoding = 'MP3',
     speakingRate = 1,
     pitch = 0,
-    volumeGainDb = -6.0,
+    volumeGainDb = 0,
     voiceType = 'Standard',
     voiceGender = 'A',
   } = audioConfig;
@@ -58,7 +55,7 @@ async function textVocalization(textToVocalize) {
 
   // Performs the text-to-speech request
   const [response] = await client.synthesizeSpeech(request);
-  const pathFile = path.join(`${__dirname}/../file-storage/public`);
+  const pathFile = path.join(`${__dirname}/../file-storage/private`);
 
   // Write the binary audio content to a local file
   const writeFile = util.promisify(fs.writeFile);

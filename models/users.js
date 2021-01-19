@@ -1,9 +1,10 @@
-const argon2 = require('argon2');
-const db = require('../db');
-const { ValidationError, RecordNotFoundError } = require('../error-types');
+const argon2 = require("argon2");
+
+const db = require("../db");
+const { ValidationError, RecordNotFoundError } = require("../error-types");
 
 const findOne = async (id, failIfNotFound = true) => {
-  const user = await db.query('SELECT * FROM user WHERE id = ?', [id]);
+  const user = await db.query("SELECT * FROM user WHERE id = ?", [id]);
   if (user.length) {
     return user[0];
   }
@@ -11,17 +12,17 @@ const findOne = async (id, failIfNotFound = true) => {
   return null;
 };
 
-// Vérification si l'email exsiste déja dans la DB
+// Check if email already exist in DB
 
 const emailAlreadyExists = async (email) => {
-  const rows = await db.query('SELECT * FROM user WHERE email = ?', [email]);
+  const rows = await db.query("SELECT * FROM user WHERE email = ?", [email]);
   if (rows.length) {
     return true;
   }
   return false;
 };
 
-// Vérification si les infos provenant du formulaire sont OK (présence des infos puis passagage de ces infos dans emailAlreadyExist)
+// check if data sent by form are OK (Validation then try with emailAlreadyExist)
 
 const validate = async (attributes) => {
   const {
@@ -41,20 +42,20 @@ const validate = async (attributes) => {
   throw new ValidationError();
 };
 
-// Utilisation de Argon2 pour "hasher" le password
+// Argon2 hashing password
 
 const hashPassword = async (password) => {
   return argon2.hash(password);
 };
 
-// Création de l'utilisateur dans la base de données, ou l'on va stocker ces infos sauf son password perso, on stock la version hashée et on retourne quelques infos pour s'en servir sur le front
+// New user created in DB, data in db except password, keeping hashing one,  then return some informations to the front
 
 const createUserInDatabase = async (newAttributes) => {
   await validate(newAttributes);
   const { firstname, lastname, email, password, phone_number } = newAttributes;
   const encrypted_password = await hashPassword(password);
   const res = await db.query(
-    'INSERT INTO user (firstname, lastname, email, encrypted_password, phone_number) VALUES (?, ?, ?, ?, ?)',
+    "INSERT INTO user (firstname, lastname, email, encrypted_password, phone_number) VALUES (?, ?, ?, ?, ?)",
     [firstname, lastname, email, encrypted_password, phone_number]
   );
   return { firstname, lastname, email, id: res.insertId };

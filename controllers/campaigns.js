@@ -19,6 +19,11 @@ module.exports.playAudio = async (req, res) => {
   const audioFile = `${req.query.audio}`;
   const pathFile = path.join(`${__dirname}/../file-storage/private`);
   const stream = fs.createReadStream(`${pathFile}/${audioFile}`);
+  stream.on('error', () => {
+    res
+      .status(404)
+      .json({ errorMessage: 'The requested audio file does not exist' });
+  });
   stream.pipe(res);
 };
 

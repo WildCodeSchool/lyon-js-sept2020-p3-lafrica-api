@@ -38,6 +38,7 @@ module.exports.downloadAudio = async (req, res) => {
   const pathFile = path.join(
     `${__dirname}/../file-storage/private/${audioFile}`
   );
+  console.log(pathFile);
   res.download(pathFile);
 };
 

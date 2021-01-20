@@ -13,14 +13,12 @@ module.exports.findOneCampaign = async (id) => {
       'SELECT contact.id, contact.lastname, contact.firstname, contact.phone_number contact_id FROM `contact_in_mailing_campaign` JOIN contact WHERE mailing_campaign_id = ?',
       [campaignData.id]
     );
-
     return { campaignData, contactsListCampaign };
   }
   return null;
 };
 
 module.exports.createCampaignId = async (user_id) => {
-  console.log(user_id);
   try {
     const data = await db.query(
       'INSERT INTO mailing_campaign (id_client_user,name,text_message,vocal_message_file_url,date, sending_status) VALUES (?, ?, ?, ?, ?, ?)',
@@ -57,7 +55,7 @@ module.exports.updateCampaign = async (campaign_id, campaignDatas) => {
         campaign_id,
       ]
     );
-    const [data] = await this.findOneCampaign(campaign_id);
+    const data = await this.findOneCampaign(campaign_id);
     return data;
   } catch (err) {
     console.log('model1 error');
@@ -66,6 +64,7 @@ module.exports.updateCampaign = async (campaign_id, campaignDatas) => {
 };
 
 module.exports.assignContactsToCampaign = async (contactsList, campaignId) => {
+  console.log('model', campaignId);
   try {
     // for (let i = 0; i < contactsList.length; i += 1)
     contactsList.forEach(async (contact) => {
@@ -76,7 +75,7 @@ module.exports.assignContactsToCampaign = async (contactsList, campaignId) => {
       if (existingContactCheck.length === 0) {
         // eslint-disable-next-line no-lone-blocks
         await db.query(
-          'INSERT INTO contact_in_mailing_campaign (contact_id,mailing_campaign_id,sending_status) VALUES (?, ?, null)',
+          'INSERT INTO contact_in_mailing_campaign (contact_id,mailing_campaign_id,sending_status) VALUES (?, ?, false)',
           [contact.id, campaignId]
         );
       }

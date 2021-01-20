@@ -1,11 +1,11 @@
-const xlsx = require("xlsx");
-const fs = require("fs");
+const xlsx = require('xlsx');
+const fs = require('fs');
 const {
   findAllContacts,
   createContacts,
   modifyContact,
   deleteContact,
-} = require("../models/contacts");
+} = require('../models/contacts');
 
 module.exports.getCollection = async (req, res) => {
   const data = await findAllContacts(req.currentUser.id);
@@ -53,7 +53,7 @@ module.exports.readContacts = async (req, res) => {
 module.exports.deleteContact = async (req, res) => {
   const data = await deleteContact(req.params.id_contact);
   if (data) {
-    return res.status(200).send("Le contact a été suprrimé");
+    return res.status(200).send('Le contact a été suprrimé');
   }
   return res.status(400).send(`Impossible de suprrimer le contact`);
 };

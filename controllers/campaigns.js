@@ -84,11 +84,9 @@ module.exports.readText = async (req, res) => {
 
 module.exports.createCampaignId = async (req, res) => {
   const { id } = req.currentUser;
-  console.log(id);
 
   const data = await createCampaignId(id);
   if (data) {
-    console.log('controller : ', data.id);
     return res.status(200).json({ campaign_id: data.id });
   }
   return res

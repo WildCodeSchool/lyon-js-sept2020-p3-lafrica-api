@@ -1,8 +1,8 @@
-const db = require("../db");
+const db = require('../db');
 
 const findOneContactFromItsId = async (contactId) => {
   const contact = db
-    .query("SELECT * FROM contact WHERE id = ?", [contactId])
+    .query('SELECT * FROM contact WHERE id = ?', [contactId])
     .catch((err) => {
       console.log(err);
       throw err;
@@ -19,7 +19,7 @@ const findOneContactFromPhoneNumberAndIdUser = async (
 ) => {
   const contact = db
     .query(
-      "SELECT * FROM contact WHERE phone_number = ? AND id_client_user = ?",
+      'SELECT * FROM contact WHERE phone_number = ? AND id_client_user = ?',
       [phone_number, currentUserId]
     )
     .catch((err) => {
@@ -33,7 +33,14 @@ const findOneContactFromPhoneNumberAndIdUser = async (
 };
 
 module.exports.findAllContacts = (id) => {
-  return db.query("SELECT * FROM contact WHERE id_client_user  = ?", [id]);
+  return db.query('SELECT * FROM contact WHERE id_client_user  = ?', [id]);
+};
+
+module.exports.findContactsForCampaign = (campaign_id) => {
+  return db.query(
+    'SELECT * FROM contact JOIN contact_in_mailing_campaign as cm ON contact.id = cm.contact_id WHERE cm.mailing_campaign_id = ?',
+    [campaign_id]
+  );
 };
 
 const phoneNumberAlreadyExistsForThisUser = async (
@@ -41,7 +48,7 @@ const phoneNumberAlreadyExistsForThisUser = async (
   currentUserId
 ) => {
   const rows = await db.query(
-    "SELECT * FROM contact WHERE phone_number = ? AND id_client_user = ?",
+    'SELECT * FROM contact WHERE phone_number = ? AND id_client_user = ?',
     [phone_number, currentUserId]
   );
   if (rows.length) {
@@ -106,7 +113,7 @@ module.exports.modifyContact = async (newAtttributes, contactId) => {
   const { lastname, firstname, phone_number } = newAtttributes;
   await db
     .query(
-      "UPDATE contact SET lastname = ?, firstname = ?, phone_number = ? WHERE id = ?",
+      'UPDATE contact SET lastname = ?, firstname = ?, phone_number = ? WHERE id = ?',
       [lastname, firstname, phone_number, contactId]
     )
     .catch((err) => {
@@ -118,7 +125,7 @@ module.exports.modifyContact = async (newAtttributes, contactId) => {
 
 module.exports.deleteContact = async (contactId) => {
   await db
-    .query("DELETE FROM contact WHERE id = ?", [contactId])
+    .query('DELETE FROM contact WHERE id = ?', [contactId])
     .catch((err) => {
       console.log(err);
       throw err;

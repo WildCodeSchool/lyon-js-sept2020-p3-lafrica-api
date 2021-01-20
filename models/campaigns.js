@@ -28,7 +28,6 @@ module.exports.createCampaignId = async (user_id) => {
       'SELECT * FROM mailing_campaign WHERE id = ?',
       [data.insertId]
     );
-    console.log('insertedCampaign[0]', insertedCampaign[0]);
     return insertedCampaign[0];
   } catch (err) {
     console.log(err);
@@ -58,13 +57,11 @@ module.exports.updateCampaign = async (campaign_id, campaignDatas) => {
     const data = await this.findOneCampaign(campaign_id);
     return data;
   } catch (err) {
-    console.log('model1 error');
     return err;
   }
 };
 
 module.exports.assignContactsToCampaign = async (contactsList, campaignId) => {
-  console.log('model', campaignId);
   try {
     // for (let i = 0; i < contactsList.length; i += 1)
     contactsList.forEach(async (contact) => {

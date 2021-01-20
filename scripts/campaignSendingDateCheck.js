@@ -20,7 +20,12 @@ module.exports.campaignSendingDateCheck = async () => {
       const dateNow = new Date();
 
       // Get list of campaigns that are not sent yet and for which date is lower that this routine date
-      if (allCampaignsList[i].date <= dateNow) {
+      if (
+        allCampaignsList[i].name &&
+        allCampaignsList[i].text_message &&
+        allCampaignsList[i].vocal_message_file_url &&
+        allCampaignsList[i].date <= dateNow
+      ) {
         const vocalisationFileName = `${allCampaignsList[i].vocal_message_file_url}`;
 
         // Get the list of phone numbers related to this campaign
@@ -82,5 +87,5 @@ module.exports.campaignSendingDateCheck = async () => {
     }
     serviceIsRunning = false;
   }
-  return 'campaign sent';
+  return 'campaings list to send checked';
 };

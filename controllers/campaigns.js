@@ -3,7 +3,9 @@ const path = require('path');
 const util = require('util');
 const {
   findAllCampaigns,
-  createCampaign,
+  findOneCampaign,
+  createCampaignId,
+  updateCampaign,
   assignContactsToCampaign,
 } = require('../models/campaigns');
 const WordFileReader = require('../helpers/handleReadWordFile');
@@ -11,6 +13,12 @@ const textVocalization = require('../services/textToSpeech');
 
 module.exports.getCollection = async (req, res) => {
   const [data] = await findAllCampaigns(req.currentUser.id);
+  res.json(data);
+};
+
+module.exports.getOneCampaign = async (req, res) => {
+  const campaign_id = req.params.campaignId;
+  const data = await findOneCampaign(campaign_id);
   res.json(data);
 };
 
@@ -69,14 +77,32 @@ module.exports.readText = async (req, res) => {
   return res.send(uploadedTextToVocalize);
 };
 
-module.exports.createCampaign = async (req, res) => {
+module.exports.createCampaignId = async (req, res) => {
+  const { id } = req.currentUser;
+  console.log(id);
+
+  const data = await createCampaignId(id);
+  if (data) {
+    console.log('controller : ', data.id);
+    return res.status(200).json({ campaign_id: data.id });
+  }
+  return res
+    .status(500)
+    .send('Something went wrong uploading campaigns database');
+};
+
+module.exports.updateCampaign = async (req, res) => {
+  const campaign_id = req.params.campaignId;
   const campaignDatas = req.body[0];
   const contactsList = req.body[1];
 
-  const data = await createCampaign(campaignDatas);
+  const data = await updateCampaign(campaign_id, campaignDatas);
   if (data) {
     const data2 = await assignContactsToCampaign(contactsList, data.id);
-    return res.status(200).send(data2);
+    return res.status(200).send({
+      'campaign updated name': campaignDatas.campaign_name,
+      'total contacts': data2,
+    });
   }
   return res
     .status(500)

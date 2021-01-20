@@ -5,7 +5,16 @@ const campaignsController = require('../controllers/campaigns');
 const handleTextUpload = require('../middlewares/handleTextUpload');
 
 campaignsRouter.get('/', asyncHandler(campaignsController.getCollection));
-campaignsRouter.post('/', asyncHandler(campaignsController.createCampaign));
+campaignsRouter.post('/', asyncHandler(campaignsController.createCampaignId));
+campaignsRouter.get(
+  '/:campaignId',
+  asyncHandler(campaignsController.getOneCampaign)
+);
+
+campaignsRouter.put(
+  '/:campaignId',
+  asyncHandler(campaignsController.updateCampaign)
+);
 
 campaignsRouter.post(
   '/uploadtext',

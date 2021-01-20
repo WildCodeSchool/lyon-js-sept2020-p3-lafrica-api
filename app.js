@@ -21,8 +21,6 @@ const handleFileTypeError = require('./middlewares/handleFileTypeError');
 const app = express();
 app.set('trust proxy', 1);
 
-console.log('ok');
-
 // docs
 if (!inTestEnv) {
   const swaggerDocument = YAML.load('./docs/swagger.yaml');

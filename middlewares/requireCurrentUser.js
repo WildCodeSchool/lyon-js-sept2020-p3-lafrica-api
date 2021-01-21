@@ -5,6 +5,11 @@ module.exports = async (req, res, next) => {
   if (user && parseInt(req.params.user_id, 10) === user.id) {
     delete user.encrypted_password;
     req.currentUser = user;
+
+    if (req.params.campaign_id) {
+      req.campaign_id = req.params.campaign_id;
+    }
+
     return next();
   }
 

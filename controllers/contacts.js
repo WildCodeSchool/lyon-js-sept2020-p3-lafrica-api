@@ -1,11 +1,12 @@
-const xlsx = require("xlsx");
-const fs = require("fs");
+const xlsx = require('xlsx');
+const fs = require('fs');
 const {
   findAllContacts,
   createContacts,
   modifyContact,
   deleteContact,
-} = require("../models/contacts");
+  findContactsForCampaign,
+} = require('../models/contacts');
 
 module.exports.getCollection = async (req, res) => {
   const data = await findAllContacts(req.currentUser.id);
@@ -14,9 +15,20 @@ module.exports.getCollection = async (req, res) => {
   }
   return res.status(400).send(`Impossible d'afficher les contacts`);
 };
+module.exports.getCollectionForCampaign = async (req, res) => {
+  const data = await findContactsForCampaign(req.campaign_id);
+  if (data) {
+    return res.status(200).json(data);
+  }
+  return res.status(400).send(`Impossible d'afficher les contacts`);
+};
 
 module.exports.createContacts = async (req, res) => {
-  const data = await createContacts(req.body, req.currentUser.id);
+  const data = await createContacts(
+    req.body,
+    req.currentUser.id,
+    req.campaign_id
+  );
   if (data) {
     return res.status(201).json(data);
   }
@@ -43,7 +55,11 @@ module.exports.readContacts = async (req, res) => {
   fs.unlink(req.file.path, (err) => {
     if (err) throw err;
   });
-  const data = await createContacts(contactsArray, req.currentUser.id);
+  const data = await createContacts(
+    contactsArray,
+    req.currentUser.id,
+    req.query.campaign
+  );
   if (data) {
     return res.status(201).json(data);
   }
@@ -51,9 +67,9 @@ module.exports.readContacts = async (req, res) => {
 };
 
 module.exports.deleteContact = async (req, res) => {
-  const data = await deleteContact(req.params.id_contact);
+  const data = await deleteContact(req.params.id_contact, req.campaign_id);
   if (data) {
-    return res.status(200).send("Le contact a été suprrimé");
+    return res.status(200).send('Le contact a été suprrimé');
   }
   return res.status(400).send(`Impossible de suprrimer le contact`);
 };

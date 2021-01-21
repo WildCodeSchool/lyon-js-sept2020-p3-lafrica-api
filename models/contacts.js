@@ -81,7 +81,28 @@ module.exports.createContacts = async (
             console.log(err);
             throw err;
           });
-        findOneContactFromPhoneNumberAndIdUser(phone_number, currentUserId);
+        const [modifiedContact] = await findOneContactFromPhoneNumberAndIdUser(
+          phone_number,
+          currentUserId
+        );
+
+        if (modifiedContact) {
+          const contactAssigned = await this.assignContactsToCampaign(
+            modifiedContact.id,
+            campaign_id
+          );
+
+          if (contactAssigned) {
+            return {
+              id: modifiedContact.id,
+              campaign_id,
+              lastname,
+              firstname,
+              phone_number,
+              id_client_user: currentUserId,
+            };
+          }
+        }
       }
       const result = await db
         .query(
@@ -109,6 +130,7 @@ module.exports.createContacts = async (
           };
         }
       }
+
       return null;
     })
   );

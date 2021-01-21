@@ -5,6 +5,13 @@ const campaignsController = require('../controllers/campaigns');
 const handleTextUpload = require('../middlewares/handleTextUpload');
 
 campaignsRouter.get('/', asyncHandler(campaignsController.getCollection));
+campaignsRouter.post('/', asyncHandler(campaignsController.createCampaignId));
+
+campaignsRouter.put(
+  '/:campaignId',
+  asyncHandler(campaignsController.updateCampaign)
+);
+
 campaignsRouter.post(
   '/uploadtext',
   handleTextUpload,
@@ -16,6 +23,11 @@ campaignsRouter.get('/audio', asyncHandler(campaignsController.playAudio));
 campaignsRouter.get(
   '/downloadaudio',
   asyncHandler(campaignsController.downloadAudio)
+);
+
+campaignsRouter.get(
+  '/:campaignId',
+  asyncHandler(campaignsController.getOneCampaign)
 );
 
 module.exports = campaignsRouter;

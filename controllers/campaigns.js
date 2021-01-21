@@ -2,7 +2,7 @@ const fs = require('fs');
 const path = require('path');
 const util = require('util');
 const {
-  findAllCampaigns,
+  findUsersCampaigns,
   findOneCampaign,
   createCampaignId,
   updateCampaign,
@@ -11,13 +11,7 @@ const WordFileReader = require('../helpers/handleReadWordFile');
 const textVocalization = require('../services/textToSpeech');
 
 module.exports.getCollection = async (req, res) => {
-  const data = await findAllCampaigns(req.currentUser.id);
-  res.json(data);
-};
-
-module.exports.getOneCampaign = async (req, res) => {
-  const campaign_id = req.params.campaignId;
-  const data = await findOneCampaign(campaign_id);
+  const data = await findUsersCampaigns(req.currentUser.id);
   res.json(data);
 };
 

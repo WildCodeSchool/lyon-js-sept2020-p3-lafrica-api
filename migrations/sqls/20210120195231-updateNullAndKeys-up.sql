@@ -15,3 +15,15 @@ ADD
   CONSTRAINT `fk_contact_has_mailing_campaign_contact1` FOREIGN KEY (`contact_id`) REFERENCES `p3_api_database`.`contact` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION,
 ADD
   CONSTRAINT `fk_contact_has_mailing_campaign_mailing_campaign1` FOREIGN KEY (`mailing_campaign_id`) REFERENCES `p3_api_database`.`mailing_campaign` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION;
+ALTER TABLE
+  `p3_api_database`.`contact` DROP FOREIGN KEY `fk_contact_client user1`;
+ALTER TABLE
+  `p3_api_database`.`contact`
+ADD
+  CONSTRAINT `fk_contact_client user1` FOREIGN KEY (`id_client_user`) REFERENCES `p3_api_database`.`user` (`id`) ON DELETE CASCADE;
+ALTER TABLE
+  `p3_api_database`.`mailing_campaign` DROP FOREIGN KEY `fk_mailing_campaign_client user1`;
+ALTER TABLE
+  `p3_api_database`.`mailing_campaign`
+ADD
+  CONSTRAINT `fk_mailing_campaign_client user1` FOREIGN KEY (`id_client_user`) REFERENCES `p3_api_database`.`user` (`id`) ON DELETE CASCADE;

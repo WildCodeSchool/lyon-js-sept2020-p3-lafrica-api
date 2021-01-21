@@ -66,7 +66,9 @@ module.exports.createContacts = async (
     newContacts.map(async (contact) => {
       const { lastname, firstname } = contact;
       let { phone_number } = contact;
-      phone_number = phone_number.toString();
+      if (typeof phone_number !== 'string') {
+        phone_number = phone_number.toString();
+      }
       const phoneNumberExists = await phoneNumberAlreadyExistsForThisUser(
         phone_number,
         currentUserId

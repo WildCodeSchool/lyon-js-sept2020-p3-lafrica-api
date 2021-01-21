@@ -18,14 +18,12 @@ module.exports.test = async (req) => {
   const vocalisationFileName = `${req.body.vocalisationFileName}`;
   const phoneNumber = [req.body.phoneNumber];
 
-  console.log(phoneNumber);
-
   const form = new FormData();
   const jsonPath = path.join(
     __dirname,
     '..',
     'file-storage',
-    'public',
+    'private',
     vocalisationFileName
   );
 

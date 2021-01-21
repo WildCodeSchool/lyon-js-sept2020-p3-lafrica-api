@@ -19,7 +19,7 @@ module.exports.createContacts = async (req, res) => {
   const data = await createContacts(
     req.body,
     req.currentUser.id,
-    req.query.campaign
+    req.campaign_id
   );
   if (data) {
     return res.status(201).json(data);

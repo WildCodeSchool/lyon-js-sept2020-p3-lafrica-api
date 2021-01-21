@@ -6,7 +6,6 @@ const {
   findOneCampaign,
   createCampaignId,
   updateCampaign,
-  assignContactsToCampaign,
 } = require('../models/campaigns');
 const WordFileReader = require('../helpers/handleReadWordFile');
 const textVocalization = require('../services/textToSpeech');
@@ -97,16 +96,13 @@ module.exports.createCampaignId = async (req, res) => {
 module.exports.updateCampaign = async (req, res) => {
   const campaign_id = req.params.campaignId;
   const campaignDatas = req.body[0];
-  const contactsList = req.body[1];
+  // const contactsList = req.body[1];
 
   const data = await updateCampaign(campaign_id, campaignDatas);
   if (data) {
-    const { campaignData } = data;
-    const data2 = await assignContactsToCampaign(contactsList, campaignData.id);
-    return res.status(200).send({
-      'campaign updated name': campaignDatas.campaign_name,
-      'total contacts': data2,
-    });
+    // const { campaignData } = data;
+    // const data2 = await assignContactsToCampaign(contactsList, campaignData.id);
+    return res.status(200).json(data);
   }
   return res
     .status(500)

@@ -3,6 +3,11 @@ const db = require('../db');
 module.exports.findAllCampaigns = (id) => {
   return db.query('SELECT * FROM mailing_campaign WHERE id = ?', [id]);
 };
+module.exports.findUsersCampaigns = (id) => {
+  return db.query('SELECT * FROM mailing_campaign WHERE id_client_user = ?', [
+    id,
+  ]);
+};
 
 module.exports.findOneCampaign = async (id) => {
   const [

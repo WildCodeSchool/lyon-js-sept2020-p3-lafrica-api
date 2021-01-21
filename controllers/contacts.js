@@ -55,10 +55,11 @@ module.exports.readContacts = async (req, res) => {
   fs.unlink(req.file.path, (err) => {
     if (err) throw err;
   });
+
   const data = await createContacts(
     contactsArray,
     req.currentUser.id,
-    req.query.campaign
+    req.campaign_id
   );
   if (data) {
     return res.status(201).json(data);

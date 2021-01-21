@@ -132,3 +132,24 @@ module.exports.deleteContact = async (contactId) => {
     });
   return findOneContactFromItsId(contactId);
 };
+
+// module.exports.assignContactsToCampaign = async (contactsList, campaignId) => {
+//   try {
+//     contactsList.forEach(async (contact) => {
+//       const existingContactCheck = await db.query(
+//         'SELECT * FROM contact_in_mailing_campaign WHERE contact_id = ? AND mailing_campaign_id = ?',
+//         [contact.id, campaignId]
+//       );
+//       if (existingContactCheck.length === 0) {
+//         // eslint-disable-next-line no-lone-blocks
+//         await db.query(
+//           'INSERT INTO contact_in_mailing_campaign (contact_id,mailing_campaign_id,sending_status) VALUES (?, ?, false)',
+//           [contact.id, campaignId]
+//         );
+//       }
+//     });
+//     return contactsList.length;
+//   } catch (err) {
+//     return err;
+//   }
+// };

@@ -5,10 +5,18 @@ const {
   createContacts,
   modifyContact,
   deleteContact,
+  findContactsForCampaign,
 } = require('../models/contacts');
 
 module.exports.getCollection = async (req, res) => {
   const data = await findAllContacts(req.currentUser.id);
+  if (data) {
+    return res.status(200).json(data);
+  }
+  return res.status(400).send(`Impossible d'afficher les contacts`);
+};
+module.exports.getCollectionForCampaign = async (req, res) => {
+  const data = await findContactsForCampaign(req.campaign_id);
   if (data) {
     return res.status(200).json(data);
   }

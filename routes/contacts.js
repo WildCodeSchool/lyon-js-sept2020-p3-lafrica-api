@@ -3,7 +3,10 @@ const asyncHandler = require('express-async-handler');
 const contactsController = require('../controllers/contacts');
 const handleContactUpload = require('../middlewares/handleContactsUpload');
 
-contactsRouter.get('/', asyncHandler(contactsController.getCollection));
+contactsRouter.get(
+  '/',
+  asyncHandler(contactsController.getCollectionForCampaign)
+);
 contactsRouter.post('/', asyncHandler(contactsController.createContacts));
 contactsRouter.put(
   '/:id_contact',

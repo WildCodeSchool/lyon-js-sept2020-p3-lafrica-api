@@ -57,7 +57,11 @@ const phoneNumberAlreadyExistsForThisUser = async (
   return false;
 };
 
-module.exports.createContacts = async (newContacts, currentUserId) => {
+module.exports.createContacts = async (
+  newContacts,
+  currentUserId,
+  campaign_id
+) => {
   const createdContacts = await Promise.all(
     newContacts.map(async (contact) => {
       const { lastname, firstname } = contact;
@@ -77,10 +81,7 @@ module.exports.createContacts = async (newContacts, currentUserId) => {
             console.log(err);
             throw err;
           });
-        return findOneContactFromPhoneNumberAndIdUser(
-          phone_number,
-          currentUserId
-        );
+        findOneContactFromPhoneNumberAndIdUser(phone_number, currentUserId);
       }
       const result = await db
         .query(
@@ -92,13 +93,21 @@ module.exports.createContacts = async (newContacts, currentUserId) => {
           throw err;
         });
       if (result) {
-        return {
-          id: result.insertId,
-          lastname,
-          firstname,
-          phone_number,
-          id_client_user: currentUserId,
-        };
+        const contactAssigned = await this.assignContactsToCampaign(
+          result.insertId,
+          campaign_id
+        );
+
+        if (contactAssigned) {
+          return {
+            id: result.insertId,
+            campaign_id,
+            lastname,
+            firstname,
+            phone_number,
+            id_client_user: currentUserId,
+          };
+        }
       }
       return null;
     })
@@ -133,23 +142,21 @@ module.exports.deleteContact = async (contactId) => {
   return findOneContactFromItsId(contactId);
 };
 
-// module.exports.assignContactsToCampaign = async (contactsList, campaignId) => {
-//   try {
-//     contactsList.forEach(async (contact) => {
-//       const existingContactCheck = await db.query(
-//         'SELECT * FROM contact_in_mailing_campaign WHERE contact_id = ? AND mailing_campaign_id = ?',
-//         [contact.id, campaignId]
-//       );
-//       if (existingContactCheck.length === 0) {
-//         // eslint-disable-next-line no-lone-blocks
-//         await db.query(
-//           'INSERT INTO contact_in_mailing_campaign (contact_id,mailing_campaign_id,sending_status) VALUES (?, ?, false)',
-//           [contact.id, campaignId]
-//         );
-//       }
-//     });
-//     return contactsList.length;
-//   } catch (err) {
-//     return err;
-//   }
-// };
+module.exports.assignContactsToCampaign = async (contactId, campaignId) => {
+  try {
+    const existingContactCheck = await db.query(
+      'SELECT * FROM contact_in_mailing_campaign WHERE contact_id = ? AND mailing_campaign_id = ?',
+      [contactId, campaignId]
+    );
+    if (existingContactCheck.length === 0) {
+      // eslint-disable-next-line no-lone-blocks
+      await db.query(
+        'INSERT INTO contact_in_mailing_campaign (contact_id,mailing_campaign_id,sending_status) VALUES (?, ?, false)',
+        [contactId, campaignId]
+      );
+    }
+    return true;
+  } catch (err) {
+    return err;
+  }
+};

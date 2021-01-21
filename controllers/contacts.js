@@ -16,7 +16,11 @@ module.exports.getCollection = async (req, res) => {
 };
 
 module.exports.createContacts = async (req, res) => {
-  const data = await createContacts(req.body, req.currentUser.id);
+  const data = await createContacts(
+    req.body,
+    req.currentUser.id,
+    req.query.campaign
+  );
   if (data) {
     return res.status(201).json(data);
   }
@@ -43,7 +47,11 @@ module.exports.readContacts = async (req, res) => {
   fs.unlink(req.file.path, (err) => {
     if (err) throw err;
   });
-  const data = await createContacts(contactsArray, req.currentUser.id);
+  const data = await createContacts(
+    contactsArray,
+    req.currentUser.id,
+    req.query.campaign
+  );
   if (data) {
     return res.status(201).json(data);
   }

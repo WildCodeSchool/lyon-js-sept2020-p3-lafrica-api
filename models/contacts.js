@@ -132,9 +132,12 @@ module.exports.modifyContact = async (newAtttributes, contactId) => {
   return findOneContactFromItsId(contactId);
 };
 
-module.exports.deleteContact = async (contactId) => {
+module.exports.deleteContact = async (contactId, campaignId) => {
   await db
-    .query('DELETE FROM contact WHERE id = ?', [contactId])
+    .query(
+      'DELETE FROM contact_in_mailing_campaign WHERE contact_id = ? AND mailing_campaign_id = ?',
+      [contactId, campaignId]
+    )
     .catch((err) => {
       console.log(err);
       throw err;

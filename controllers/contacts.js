@@ -67,7 +67,7 @@ module.exports.readContacts = async (req, res) => {
 };
 
 module.exports.deleteContact = async (req, res) => {
-  const data = await deleteContact(req.params.id_contact);
+  const data = await deleteContact(req.params.id_contact, req.campaign_id);
   if (data) {
     return res.status(200).send('Le contact a été suprrimé');
   }

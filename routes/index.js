@@ -17,7 +17,6 @@ module.exports = (app) => {
   );
   app.use('/users', usersRouter);
   app.use('/users/:user_id/campaigns', requireCurrentUser, campaignsRouter);
-
   app.use('/auth', authRoutes);
   app.use('/voice/sendVocalMessage', sendVocalToPhone);
 };

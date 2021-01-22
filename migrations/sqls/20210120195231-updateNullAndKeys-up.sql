@@ -7,23 +7,23 @@ ALTER TABLE
 ALTER TABLE
   mailing_campaign CHANGE date date datetime;
 ALTER TABLE
-  `p3_api_database`.`contact_in_mailing_campaign` DROP FOREIGN KEY `fk_contact_has_mailing_campaign_contact1`,
+  `contact_in_mailing_campaign` DROP FOREIGN KEY `fk_contact_has_mailing_campaign_contact1`,
   DROP FOREIGN KEY `fk_contact_has_mailing_campaign_mailing_campaign1`;
 ALTER TABLE
-  `p3_api_database`.`contact_in_mailing_campaign`
+  `contact_in_mailing_campaign`
 ADD
-  CONSTRAINT `fk_contact_has_mailing_campaign_contact1` FOREIGN KEY (`contact_id`) REFERENCES `p3_api_database`.`contact` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION,
+  CONSTRAINT `fk_contact_has_mailing_campaign_contact1` FOREIGN KEY (`contact_id`) REFERENCES `contact` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION,
 ADD
-  CONSTRAINT `fk_contact_has_mailing_campaign_mailing_campaign1` FOREIGN KEY (`mailing_campaign_id`) REFERENCES `p3_api_database`.`mailing_campaign` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION;
+  CONSTRAINT `fk_contact_has_mailing_campaign_mailing_campaign1` FOREIGN KEY (`mailing_campaign_id`) REFERENCES `mailing_campaign` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION;
 ALTER TABLE
-  `p3_api_database`.`contact` DROP FOREIGN KEY `fk_contact_client user1`;
+  `contact` DROP FOREIGN KEY `fk_contact_client user1`;
 ALTER TABLE
-  `p3_api_database`.`contact`
+  `contact`
 ADD
-  CONSTRAINT `fk_contact_client user1` FOREIGN KEY (`id_client_user`) REFERENCES `p3_api_database`.`user` (`id`) ON DELETE CASCADE;
+  CONSTRAINT `fk_contact_client user1` FOREIGN KEY (`id_client_user`) REFERENCES `user` (`id`) ON DELETE CASCADE;
 ALTER TABLE
-  `p3_api_database`.`mailing_campaign` DROP FOREIGN KEY `fk_mailing_campaign_client user1`;
+  `mailing_campaign` DROP FOREIGN KEY `fk_mailing_campaign_client user1`;
 ALTER TABLE
-  `p3_api_database`.`mailing_campaign`
+  `mailing_campaign`
 ADD
-  CONSTRAINT `fk_mailing_campaign_client user1` FOREIGN KEY (`id_client_user`) REFERENCES `p3_api_database`.`user` (`id`) ON DELETE CASCADE;
+  CONSTRAINT `fk_mailing_campaign_client user1` FOREIGN KEY (`id_client_user`) REFERENCES `user` (`id`) ON DELETE CASCADE;

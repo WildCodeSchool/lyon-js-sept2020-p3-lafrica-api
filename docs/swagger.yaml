@@ -2,7 +2,8 @@ swagger: '2.0'
 info:
   version: '1.0.0'
   title: 'LAfrica Mobile Text to Voice API'
-host: api.text2voice.duckdns.org
+# host: api.text2voice.duckdns.org
+host: localhost:5000
 basePath: '/'
 consumes:
   - 'application/json'
@@ -176,9 +177,41 @@ paths:
 
     post:
       summary: Create a campaign
+      description: "IMPORTANT : you must create a new campaign before importing contacts"  
       consumes:
         - application/json
       parameters:
+        - in: path
+          name: user_id
+          type: integer
+          required: true
+          description: Numeric ID of the user to get.
+      responses:
+        201:
+          description: Campaign created
+          schema:
+            type: object 
+            properties:
+              id:
+                type: integer
+                description: The campaign ID.
+
+        401:
+          description: 'Unhautorized. The user is not logged in, or the user ID does not match the user identified by the cookie session or the current user.'
+
+        400:
+          description: Calling this route with an empty request body (JSON) is a no-op.
+
+    put:
+      summary: Update a campaign
+      consumes:
+        - application/json
+      parameters:
+        - in: path
+          name: user_id
+          type: integer
+          required: true
+          description: Numeric ID of the user to get.
         - in: body
           name: user
           schema:
@@ -350,7 +383,7 @@ paths:
           required: true
           description: Audio file name and extension (i.e file.mp3)
       produces : 
-            - audio
+            - application/json
       responses:
         200:
           description: A stream of the audio file requested.
@@ -380,6 +413,286 @@ paths:
 
         401:
           description: 'Unhautorized. The user is not logged in, or the user ID does not match the user identified by the cookie session or the current user is not allowed to get the user campaigns.'
+
+  /users/{user_id}/campaigns/{campaign_id}/contacts:
+    get:
+      summary: Get contacts associated to a campaign.
+      parameters:
+        - in: path
+          name: user_id
+          type: integer
+          required: true
+          description: Numeric ID of the user to get.
+        - in: path
+          name: campaign_id
+          type: integer
+          required: true
+          description: Numeric ID of the campaign to get.
+        
+      produces : 
+            - application/json
+      responses:
+        200:
+          description: Get contacts associated to a campaign.
+          schema:
+            type: array
+            items : 
+              type: object
+              properties:
+                id:
+                  type: integer
+                  description: The contact ID.
+                lastname:
+                  type: string
+                  description: The contact lastname.
+                firstname:
+                  type: string
+                  description: The contact firstname.
+                phone_number:
+                  type: string
+                  description: The contact phone number.
+                id_client_user:
+                  type: integer
+                  description: The user ID.
+                campaign_id:
+                  type: integer
+                  description: The campaign ID.
+
+        400:
+          description: 'Impossible to create contacts for this campaign.'
+        401:
+          description: 'Unhautorized. The user is not logged in, or the user ID does not match the user identified by the cookie session or the current user is not allowed to get the user campaigns.'
+
+    post:
+      summary: Post contacts and associate them to a campaign.
+      parameters:
+        - in: path
+          name: user_id
+          type: integer
+          required: true
+          description: Numeric ID of the user to get.
+        - in: path
+          name: campaign_id
+          type: integer
+          required: true
+          description: Numeric ID of the campaign to get.
+        - in: body
+          name: contacts list
+          schema:
+            type: array
+            items : 
+              type: object
+              properties:
+                lastname:
+                  type: string
+                  description: The contact lastname.
+                firstname:
+                  type: string
+                  description: The contact firstname.
+                phone_number:
+                  type: string
+                  description: The contact phone number. Please be aware to precise the phone indicator (i.e. 33 for France, 221 for Senegal etc.). 
+          required: true
+          description: Contacts to create.
+        
+      produces : 
+            - application/json
+      responses:
+        200:
+          description: Get contacts associated to a campaign.
+          schema:
+            type: array
+            items : 
+              type: object
+              properties:
+                id:
+                  type: integer
+                  description: The contact ID.
+                lastname:
+                  type: string
+                  description: The contact lastname.
+                firstname:
+                  type: string
+                  description: The contact firstname.
+                phone_number:
+                  type: string
+                  description: The contact phone number.
+                id_client_user:
+                  type: integer
+                  description: The user ID.
+                campaign_id:
+                  type: integer
+                  description: The campaign ID.
+
+        400:
+          description: 'Impossible to get contacts for this campaign.'
+        401:
+          description: 'Unhautorized. The user is not logged in, or the user ID does not match the user identified by the cookie session or the current user is not allowed to get the user campaigns.'
+
+        404:
+          description: 'File upload only support the following filetypes: .xlsx, .csv'
+
+  /users/{user_id}/campaigns/{campaign_id}/contacts/upload:
+    post:
+      summary: Post contacts and associate them to a campaign.
+      consumes: 
+        - multipart/form-data
+      parameters:
+        - in: path
+          name: user_id
+          type: integer
+          required: true
+          description: Numeric ID of the user to get.
+        - in: path
+          name: campaign_id
+          type: integer
+          required: true
+          description: Numeric ID of the campaign to get.
+        - in: formData
+          name: uploaded_contacts
+          type: file
+          description: "Contacts to upload. The format supported are .xlsx and .csv. The file should be structured as follows: 
+          - Column #1: lastname
+          - Column #2: firstname
+          - Column #3: phone_number
+          - Rows : the contact data (string)."
+          required: true
+        
+      produces : 
+            - application/json
+      responses:
+        201:
+          description: Contacts successfully uploaded and associated to a campaign.
+          schema:
+            type: array
+            items : 
+              type: object
+              properties:
+                id:
+                  type: integer
+                  description: The contact ID.
+                lastname:
+                  type: string
+                  description: The contact lastname.
+                firstname:
+                  type: string
+                  description: The contact firstname.
+                phone_number:
+                  type: string
+                  description: The contact phone number.
+                id_client_user:
+                  type: integer
+                  description: The user ID.
+                campaign_id:
+                  type: integer
+                  description: The campaign ID.
+
+        400:
+          description: 'Impossible to upload contacts for this campaign.'
+        401:
+          description: 'Unhautorized. The user is not logged in, or the user ID does not match the user identified by the cookie session or the current user is not allowed to get the user campaigns.'
+
+
+  /users/{user_id}/campaigns/{campaign_id}/contacts/{contact_id}:
+    put:
+      summary: Update a contact associated to a campaign.
+      parameters:
+        - in: path
+          name: user_id
+          type: integer
+          required: true
+          description: Numeric ID of the user to get.
+        - in: path
+          name: campaign_id
+          type: integer
+          required: true
+          description: Numeric ID of the campaign to get.
+        - in: path
+          name: contact_id
+          type: integer
+          required: true
+          description: Numeric ID of the contact to update.
+        - in: body
+          name: contact 
+          description: contact to update
+          schema:
+            type: object
+            properties:
+              lastname:
+                type: string
+                description: The contact lastname.
+              firstname:
+                type: string
+                description: The contact firstname.
+              phone_number:
+                type: string
+                description: The contact phone number. Please be aware to precise the phone indicator (i.e. 33 for France, 221 for Senegal etc.). 
+          required: true
+        
+      produces : 
+            - application/json
+      responses:
+        200:
+          description: Get contacts associated to a campaign.
+          schema:
+            type: array
+            items : 
+              type: object
+              properties:
+                id:
+                  type: integer
+                  description: The contact ID.
+                lastname:
+                  type: string
+                  description: The contact lastname.
+                firstname:
+                  type: string
+                  description: The contact firstname.
+                phone_number:
+                  type: string
+                  description: The contact phone number.
+                id_client_user:
+                  type: integer
+                  description: The user ID.
+                campaign_id:
+                  type: integer
+                  description: The campaign ID.
+
+        400:
+          description: 'Impossible to update this contact.'
+        401:
+          description: 'Unhautorized. The user is not logged in, or the user ID does not match the user identified by the cookie session or the current user is not allowed to get the user campaigns.'
+
+    delete:
+      summary: Delete a contact associated to a campaign.
+      parameters:
+        - in: path
+          name: user_id
+          type: integer
+          required: true
+          description: Numeric ID of the user to get.
+        - in: path
+          name: campaign_id
+          type: integer
+          required: true
+          description: Numeric ID of the campaign to get.
+        - in: path
+          name: contact_id
+          type: integer
+          required: true
+          description: Numeric ID of the contact to update.
+        
+      produces : 
+            - application/json
+      responses:
+        200:
+          description: User successfully deleted for this campaign.
+          
+        400:
+          description: 'Impossible to delete this contact for this campaign.'
+        401:
+          description: 'Unhautorized. The user is not logged in, or the user ID does not match the user identified by the cookie session or the current user is not allowed to get the user campaigns.'
+
 
 definitions:
   Sign Up:

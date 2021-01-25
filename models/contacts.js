@@ -36,10 +36,10 @@ module.exports.findAllContacts = (id) => {
   return db.query('SELECT * FROM contact WHERE id_client_user  = ?', [id]);
 };
 
-module.exports.findContactsForCampaign = (campaign_id) => {
+module.exports.findContactsForCampaign = (campaign_id, user_id) => {
   return db.query(
-    'SELECT * FROM contact JOIN contact_in_mailing_campaign as cm ON contact.id = cm.contact_id WHERE cm.mailing_campaign_id = ?',
-    [campaign_id]
+    'SELECT c.*, cm.mailing_campaign_id as campaign_id FROM contact as c JOIN contact_in_mailing_campaign as cm ON c.id = cm.contact_id WHERE cm.mailing_campaign_id = ? and c.id_client_user = ?',
+    [campaign_id, user_id]
   );
 };
 
@@ -97,7 +97,7 @@ module.exports.createContacts = async (
           if (contactAssigned) {
             return {
               id: modifiedContact.id,
-              campaign_id,
+              campaign_id: parseInt(campaign_id, 10),
               lastname,
               firstname,
               phone_number,
@@ -124,7 +124,7 @@ module.exports.createContacts = async (
         if (contactAssigned) {
           return {
             id: result.insertId,
-            campaign_id,
+            campaign_id: parseInt(campaign_id, 10),
             lastname,
             firstname,
             phone_number,

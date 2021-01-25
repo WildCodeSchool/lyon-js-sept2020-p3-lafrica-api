@@ -16,7 +16,10 @@ module.exports.getCollection = async (req, res) => {
   return res.status(400).send(`Impossible d'afficher les contacts`);
 };
 module.exports.getCollectionForCampaign = async (req, res) => {
-  const data = await findContactsForCampaign(req.campaign_id);
+  const data = await findContactsForCampaign(
+    req.campaign_id,
+    req.currentUser.id
+  );
   if (data) {
     return res.status(200).json(data);
   }
@@ -70,7 +73,7 @@ module.exports.readContacts = async (req, res) => {
 module.exports.deleteContact = async (req, res) => {
   const data = await deleteContact(req.params.id_contact, req.campaign_id);
   if (data) {
-    return res.status(200).send('Le contact a été suprrimé');
+    return res.status(200).send('Le contact a été supprimé');
   }
   return res.status(400).send(`Impossible de suprrimer le contact`);
 };

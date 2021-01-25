@@ -2,19 +2,11 @@ const axios = require('axios');
 const FormData = require('form-data');
 const fs = require('fs');
 const path = require('path');
+const { LAM_API_LOGIN, LAM_API_PASSWORD } = require('../env');
 
 require('dotenv').config();
 
-function getEnv(varibale) {
-  const value = process.env[varibale];
-  if (typeof value === 'undefined') {
-    console.warn(`Seems like the variable "${varibale}" is not set in the environment.
-    Did you forget to execute "cp .env.sample .env" and adjust variables in the .env file to match your own environment ?`);
-  }
-  return value;
-}
-
-module.exports.test = async (req) => {
+module.exports.test = async (req, res) => {
   const vocalisationFileName = `${req.body.vocalisationFileName}`;
   const phoneNumber = [req.body.phoneNumber];
 
@@ -27,26 +19,26 @@ module.exports.test = async (req) => {
     vocalisationFileName
   );
 
-  form.append('login', getEnv('LAM_API_login'));
-  form.append('password', getEnv('LAM_API_password'));
+  form.append('login', LAM_API_LOGIN);
+  form.append('password', LAM_API_PASSWORD);
   form.append('filename', fs.createReadStream(jsonPath));
 
   axios
     .post('https://voice.lafricamobile.com/api/Upload', form, {
       headers: form.getHeaders(),
     })
-    .then((res) => {
-      console.log('REQUETE UPLOAD API LAM : ', res.data);
+    .then((result) => {
+      console.log('REQUETE UPLOAD API LAM : ', result.data);
       const { clientFileName, serverFileName } = JSON.parse(
-        res.data.slice(0, -1)
+        result.data.slice(0, -1)
       );
       console.log('ETAPE 2');
       console.log(clientFileName, serverFileName);
 
       axios
         .post('https://voice.lafricamobile.com/api/Message', {
-          login: getEnv('LAM_API_login'),
-          password: getEnv('LAM_API_password'),
+          login: LAM_API_LOGIN,
+          password: LAM_API_PASSWORD,
           filename: clientFileName,
           serverfilename: serverFileName,
           campagnename: 'test',
@@ -54,6 +46,7 @@ module.exports.test = async (req) => {
         })
         .then((res2) => {
           console.log(res2.data);
+          res.sendStatus(200);
         });
     });
 };

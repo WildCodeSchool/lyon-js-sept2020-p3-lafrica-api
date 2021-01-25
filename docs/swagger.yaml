@@ -9,10 +9,13 @@ consumes:
   - 'application/json'
 produces:
   - 'application/json'
+
 paths:
   /auth/login:
     post:
       summary: User authentification
+      tags: 
+        - Authentication
       consumes:
         - application/json
       parameters:
@@ -56,6 +59,8 @@ paths:
   /auth/logout:
     get: 
       summary: User logout
+      tags: 
+        - Authentication
       responses:
         200:
           description: User logged out
@@ -63,6 +68,8 @@ paths:
   /users/signUp:
     post:
       summary: Registration of a new user
+      tags: 
+        - Authentication
       consumes:
         - application/json
       parameters:
@@ -107,7 +114,7 @@ paths:
           description: User successfully registered
           schema:
             type: object
-            $ref: '#/definitions/Sign Up'
+            # $ref: '#/definitions/Sign Up'
             properties:
               id:
                 type: integer
@@ -127,13 +134,13 @@ paths:
 
         422:
             description: Email already exists in database
-
-    # $ref: '#/definitions/Registration'
         
   
   /users/{user_id}/campaigns:
     get:
       summary: Get all campaigns for a specific user.
+      tags: 
+        - Campaigns
       parameters:
         - in: path
           name: user_id
@@ -177,6 +184,8 @@ paths:
 
     post:
       summary: Create a campaign
+      tags: 
+        - Campaigns
       description: "IMPORTANT : you must create a new campaign before importing contacts"  
       consumes:
         - application/json
@@ -204,6 +213,8 @@ paths:
 
     put:
       summary: Update a campaign
+      tags: 
+        - Campaigns
       consumes:
         - application/json
       parameters:
@@ -272,6 +283,8 @@ paths:
   /users/{user_id}/campaigns/uploadtext:
     post:
       summary: Upload a .txt or .docx file 
+      tags: 
+        - Campaigns
       consumes:
         - multipart/form-data
       parameters:
@@ -305,6 +318,8 @@ paths:
   /users/{user_id}/campaigns/TTS:
     post:
       summary: Vocalization of a text message
+      tags: 
+        - Campaigns
       consumes:
         - application/json
       produces:
@@ -371,6 +386,8 @@ paths:
   /users/{user_id}/campaigns/audio?audio=file.mp3:
     get:
       summary: Get a stream of an audio file.
+      tags: 
+        - Campaigns
       parameters:
         - in: path
           name: user_id
@@ -394,6 +411,8 @@ paths:
   /users/{user_id}/campaigns/downloadaudio?audio=file.mp3:
     get:
       summary: Download an audio file.
+      tags: 
+        - Campaigns
       parameters:
         - in: path
           name: user_id
@@ -417,6 +436,8 @@ paths:
   /users/{user_id}/campaigns/{campaign_id}/contacts:
     get:
       summary: Get contacts associated to a campaign.
+      tags: 
+        - Contacts
       parameters:
         - in: path
           name: user_id
@@ -464,7 +485,11 @@ paths:
           description: 'Unhautorized. The user is not logged in, or the user ID does not match the user identified by the cookie session or the current user is not allowed to get the user campaigns.'
 
     post:
-      summary: Post contacts and associate them to a campaign.
+      summary: Create contacts and associate them to a campaign.
+      description: "IMPORTANT : you must create a new campaign before importing contacts"
+
+      tags: 
+        - Contacts
       parameters:
         - in: path
           name: user_id
@@ -534,7 +559,11 @@ paths:
 
   /users/{user_id}/campaigns/{campaign_id}/contacts/upload:
     post:
-      summary: Post contacts and associate them to a campaign.
+      summary: Upload contacts and associate them to a campaign.
+      description: "IMPORTANT : you must create a new campaign before importing contacts"
+
+      tags: 
+        - Contacts
       consumes: 
         - multipart/form-data
       parameters:
@@ -596,6 +625,8 @@ paths:
   /users/{user_id}/campaigns/{campaign_id}/contacts/{contact_id}:
     put:
       summary: Update a contact associated to a campaign.
+      tags: 
+        - Contacts
       parameters:
         - in: path
           name: user_id
@@ -665,6 +696,8 @@ paths:
 
     delete:
       summary: Delete a contact associated to a campaign.
+      tags: 
+        - Contacts
       parameters:
         - in: path
           name: user_id
@@ -693,33 +726,57 @@ paths:
         401:
           description: 'Unhautorized. The user is not logged in, or the user ID does not match the user identified by the cookie session or the current user is not allowed to get the user campaigns.'
 
+  /voice/sendVocalMessage/test: 
+    post: 
+      summary: Test a broadcasted audio message.
+      tags: 
+        - Test 
+      parameters:
+        - in: body
+          name: Test 
+          description: Send an audio message on a phone number. You must vocalize a text message before trying to send it.
+          schema:
+            type: object
+            properties:
+              vocalisationFileName:
+                type: string
+                description: The name of the audio message as returned by the API.
+              phoneNumber:
+                type: string
+                description: Please be aware to precise the phone indicator (i.e. 33 for France, 221 for Senegal etc.). 
+      responses:
+        200:
+          description: OK
+          
 
-definitions:
-  Sign Up:
-    properties:
-      firstname:
-        type: 'string'
-      lastname:
-        type: 'string'
-      phone_number:
-        type: string
-        pattern: /^[0-9]?()[0-9](\s|\S)(\d[0-9]{0,})$/
-        description: The phone number must be preceded by the phone indicator (i.e. 33 for France, 221 for Senegal etc.) 
-      email:
-        type: 'string'
-        pattern : ^(([^<>()[\]\\.,;:\s@“]+(\.[^<>()[\]\\.,;:\s@“]+)*)|(“.+“))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$
-      password:
-        type: string
-        pattern: /^(?=.{6,}$)(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*\W).*$/
-        description: The password must contain one uppercase, one lowercase, one number and one special character and must be at least 6 characters long.
-        minLength: 6
-      password_confirmation:
-        type: string
-        minLength: 6
-    required:
-      - firstname
-      - lastname 
-      - email
-      - phone_number
-      - password
-      - password_confirmation
+
+
+# definitions:
+#   Sign Up:
+#     properties:
+#       firstname:
+#         type: 'string'
+#       lastname:
+#         type: 'string'
+#       phone_number:
+#         type: string
+#         pattern: /^[0-9]?()[0-9](\s|\S)(\d[0-9]{0,})$/
+#         description: The phone number must be preceded by the phone indicator (i.e. 33 for France, 221 for Senegal etc.) 
+#       email:
+#         type: 'string'
+#         pattern : ^(([^<>()[\]\\.,;:\s@“]+(\.[^<>()[\]\\.,;:\s@“]+)*)|(“.+“))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$
+#       password:
+#         type: string
+#         pattern: /^(?=.{6,}$)(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*\W).*$/
+#         description: The password must contain one uppercase, one lowercase, one number and one special character and must be at least 6 characters long.
+#         minLength: 6
+#       password_confirmation:
+#         type: string
+#         minLength: 6
+#     required:
+#       - firstname
+#       - lastname 
+#       - email
+#       - phone_number
+#       - password
+#       - password_confirmation

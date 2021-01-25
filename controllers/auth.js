@@ -57,7 +57,7 @@ module.exports.forgot = async (req, res) => {
         from: MAIL_SERVICE,
         to: user.email,
         subject: 'Mot de passe oublié',
-        text: `Bonjour, \n\n Une demande pour réinitialiser le mot de passe de votre espace voix L'Africa Mobile. \n\n Si vous n’êtes pas à l’origine de cette demande, vous pouvez ignorer ce mail. \n\n Pour définir un nouveau mot de passe, cliquez sur le lien ci-dessous : \n\n ${MAIL_CLIENT_URL}/reset/${token} \n\n Si le lien ne fonctionne pas, vous pouvez le copier et le coller dans la barre d’adresse de votre navigateur. Pour des raisons de sécurité, ce lien ne sera valable que 1 heure. Passé ce délai, nous vous invitons à cliquer sur le lien "Mot de passe oublié" sur la page de connexion de l'application.`,
+        text: `Bonjour, \n\n Une demande pour réinitialiser le mot de passe de votre espace voix L'Africa Mobile a été effectuée. \n\n Si vous n’êtes pas à l’origine de cette demande, vous pouvez ignorer ce mail. \n\n Pour définir un nouveau mot de passe, cliquez sur le lien ci-dessous : \n\n ${MAIL_CLIENT_URL}/reset/${token} \n\n Si le lien ne fonctionne pas, vous pouvez le copier et le coller dans la barre d’adresse de votre navigateur. Pour des raisons de sécurité, ce lien ne sera valable que 1 heure. Passé ce délai, nous vous invitons à cliquer sur le lien "Mot de passe oublié" sur la page de connexion de l'application.`,
       };
 
       transporter.sendMail(mailOptions, (error, info) => {

@@ -1,14 +1,14 @@
-const fs = require('fs');
-const path = require('path');
-const util = require('util');
+const fs = require("fs");
+const path = require("path");
+const util = require("util");
 const {
   findUsersCampaigns,
   findOneCampaign,
   createCampaignId,
   updateCampaign,
-} = require('../models/campaigns');
-const WordFileReader = require('../helpers/handleReadWordFile');
-const textVocalization = require('../services/textToSpeech');
+} = require("../models/campaigns");
+const WordFileReader = require("../helpers/handleReadWordFile");
+const textVocalization = require("../services/textToSpeech");
 
 module.exports.getCollection = async (req, res) => {
   const data = await findUsersCampaigns(req.currentUser.id);
@@ -30,10 +30,10 @@ module.exports.playAudio = async (req, res) => {
   const audioFile = `${req.query.audio}`;
   const pathFile = path.join(`${__dirname}/../file-storage/private`);
   const stream = fs.createReadStream(`${pathFile}/${audioFile}`);
-  stream.on('error', () => {
+  stream.on("error", () => {
     res
       .status(404)
-      .json({ errorMessage: 'The requested audio file does not exist' });
+      .json({ errorMessage: "The requested audio file does not exist" });
   });
   stream.pipe(res);
 };
@@ -52,24 +52,24 @@ module.exports.readText = async (req, res) => {
   const fileExtension = path.extname(req.file.path);
   let uploadedTextToVocalize;
   switch (fileExtension) {
-    case '.txt':
+    case ".txt":
       try {
-        uploadedTextToVocalize = await readfile(req.file.path, 'utf-8');
+        uploadedTextToVocalize = await readfile(req.file.path, "utf-8");
         break;
       } catch (err) {
         console.error(err);
         return res
           .status(500)
-          .send('Something went wrong in reading .txt file');
+          .send("Something went wrong in reading .txt file");
       }
-    case '.docx':
+    case ".docx":
       try {
         uploadedTextToVocalize = await WordFileReader.extract(req.file.path);
       } catch (err) {
         console.error(err);
         return res
           .status(500)
-          .send('Something went wrong in reading .docx file');
+          .send("Something went wrong in reading .docx file");
       }
       break;
     default:
@@ -91,7 +91,7 @@ module.exports.createCampaignId = async (req, res) => {
   }
   return res
     .status(500)
-    .send('Something went wrong uploading campaigns database');
+    .send("Something went wrong uploading campaigns database");
 };
 
 module.exports.updateCampaign = async (req, res) => {
@@ -107,5 +107,5 @@ module.exports.updateCampaign = async (req, res) => {
   }
   return res
     .status(500)
-    .send('Something went wrong uploading campaigns database');
+    .send("Something went wrong uploading campaigns database");
 };

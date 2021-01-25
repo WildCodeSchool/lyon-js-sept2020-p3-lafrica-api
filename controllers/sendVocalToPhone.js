@@ -27,8 +27,8 @@ module.exports.test = async (req) => {
     vocalisationFileName
   );
 
-  form.append('login', getEnv('LAM_API_login'));
-  form.append('password', getEnv('LAM_API_password'));
+  form.append('login', getEnv('LAM_API_LOGIN'));
+  form.append('password', getEnv('LAM_API_PASSWORD'));
   form.append('filename', fs.createReadStream(jsonPath));
 
   axios
@@ -45,8 +45,8 @@ module.exports.test = async (req) => {
 
       axios
         .post('https://voice.lafricamobile.com/api/Message', {
-          login: getEnv('LAM_API_login'),
-          password: getEnv('LAM_API_password'),
+          login: getEnv('LAM_API_LOGIN'),
+          password: getEnv('LAM_API_PASSWORD'),
           filename: clientFileName,
           serverfilename: serverFileName,
           campagnename: 'test',

@@ -4,8 +4,6 @@ const fs = require('fs');
 const path = require('path');
 const { LAM_API_LOGIN, LAM_API_PASSWORD } = require('../env');
 
-require('dotenv').config();
-
 module.exports.test = async (req, res) => {
   const vocalisationFileName = `${req.body.vocalisationFileName}`;
   const phoneNumber = [req.body.phoneNumber];
@@ -19,36 +17,44 @@ module.exports.test = async (req, res) => {
     vocalisationFileName
   );
 
-  form.append('login', LAM_API_LOGIN);
-  form.append('password', LAM_API_PASSWORD);
-  form.append('filename', fs.createReadStream(jsonPath));
+  if (fs.existsSync(jsonPath)) {
+    const stream = fs.createReadStream(jsonPath);
 
-  axios
-    .post('https://voice.lafricamobile.com/api/Upload', form, {
-      headers: form.getHeaders(),
-    })
-    .then((result) => {
-      console.log('REQUETE UPLOAD API LAM : ', result.data);
-      const { clientFileName, serverFileName } = JSON.parse(
-        result.data.slice(0, -1)
-      );
-      console.log('ETAPE 2');
-      console.log(clientFileName, serverFileName);
+    form.append('login', LAM_API_LOGIN);
+    form.append('password', LAM_API_PASSWORD);
+    form.append('filename', stream);
 
-      axios
-        .post('https://voice.lafricamobile.com/api/Message', {
-          login: LAM_API_LOGIN,
-          password: LAM_API_PASSWORD,
-          filename: clientFileName,
-          serverfilename: serverFileName,
-          campagnename: 'test',
-          contacts: phoneNumber,
-        })
-        .then((res2) => {
-          console.log(res2.data);
-          res.sendStatus(200);
-        });
-    });
+    await axios
+      .post('https://voice.lafricamobile.com/api/Upload', form, {
+        headers: form.getHeaders(),
+      })
+      .then((result) => {
+        console.log('REQUETE UPLOAD API LAM : ', result.data);
+        const { clientFileName, serverFileName } = JSON.parse(
+          result.data.slice(0, -1)
+        );
+        console.log('ETAPE 2');
+        console.log(clientFileName, serverFileName);
+
+        axios
+          .post('https://voice.lafricamobile.com/api/Message', {
+            login: LAM_API_LOGIN,
+            password: LAM_API_PASSWORD,
+            filename: clientFileName,
+            serverfilename: serverFileName,
+            campagnename: 'test',
+            contacts: phoneNumber,
+          })
+          .then((res2) => {
+            console.log(res2.data);
+          });
+      });
+    return res.status(200).send('Message successfully broadcasted');
+  }
+  return res.status(404).json({
+    error:
+      'Wrong audio filename. Please ensure to have vocalized a text message before broadcasting it',
+  });
 };
 
 // module.exports.campaignMessages = async (req, res) => {

@@ -746,7 +746,10 @@ paths:
                 description: Please be aware to precise the phone indicator (i.e. 33 for France, 221 for Senegal etc.). 
       responses:
         200:
-          description: OK
+          description: Message successfully broadcasted. The response may take few seconds to be returned.
+
+        404:
+          description: Wrong audio filename. Please ensure to have vocalized a text message before trying to broadcast.
           
 
 

@@ -1,7 +1,6 @@
 const fs = require('fs');
 const path = require('path');
 const util = require('util');
-const axios = require('axios');
 
 const {
   findUsersCampaigns,
@@ -11,7 +10,6 @@ const {
 } = require('../models/campaigns');
 const WordFileReader = require('../helpers/handleReadWordFile');
 const textVocalization = require('../services/textToSpeech');
-const { LAM_API_LOGIN, LAM_API_PASSWORD } = require('../env');
 
 module.exports.getCollection = async (req, res) => {
   const data = await findUsersCampaigns(req.currentUser.id);

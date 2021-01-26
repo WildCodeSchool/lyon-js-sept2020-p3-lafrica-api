@@ -1,26 +1,31 @@
-const contactsRouter = require('express').Router();
-const asyncHandler = require('express-async-handler');
-const contactsController = require('../controllers/contacts');
-const handleContactUpload = require('../middlewares/handleContactsUpload');
+const contactsRouter = require("express").Router();
+const asyncHandler = require("express-async-handler");
+const contactsController = require("../controllers/contacts");
+const handleContactUpload = require("../middlewares/handleContactsUpload");
 
 contactsRouter.get(
-  '/',
+  "/",
   asyncHandler(contactsController.getCollectionForCampaign)
 );
-contactsRouter.post('/', asyncHandler(contactsController.createContacts));
+contactsRouter.post("/", asyncHandler(contactsController.createContacts));
 contactsRouter.put(
-  '/:id_contact',
+  "/:id_contact",
   asyncHandler(contactsController.modifyContact)
 );
 contactsRouter.delete(
-  '/:id_contact',
+  "/:id_contact",
   asyncHandler(contactsController.deleteContact)
 );
 
 contactsRouter.post(
-  '/upload',
+  "/upload",
   handleContactUpload,
   asyncHandler(contactsController.readContacts)
+);
+
+contactsRouter.get(
+  "/exportContacts",
+  asyncHandler(contactsController.exportContacts)
 );
 
 module.exports = contactsRouter;

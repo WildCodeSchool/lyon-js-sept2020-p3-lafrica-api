@@ -30,11 +30,6 @@ campaignsRouter.get(
   asyncHandler(campaignsController.getOneCampaign)
 );
 
-campaignsRouter.put(
-  "/:campaignId",
-  asyncHandler(campaignsController.modifyOneCampaign)
-);
-
 campaignsRouter.get(
   "/:campaignId/exportStatistics",
   asyncHandler(campaignsController.exportStatistics)

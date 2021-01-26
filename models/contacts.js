@@ -53,6 +53,15 @@ module.exports.findContactsForCampaign = async (campaign_id, limit, offset) => {
     },
   });
 
+  const total = (
+    await contact_in_mailing_campaign.aggregate({
+      where: {
+        mailing_campaign_id: campaign_id,
+      },
+      count: true,
+    })
+  ).count;
+
   const result = dataset.map((data) => {
     return {
       id: data.contact.id,
@@ -63,7 +72,7 @@ module.exports.findContactsForCampaign = async (campaign_id, limit, offset) => {
     };
   });
 
-  return result;
+  return [total, result];
 };
 
 const phoneNumberAlreadyExistsForThisUser = async (

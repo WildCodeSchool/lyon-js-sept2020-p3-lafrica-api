@@ -15,8 +15,13 @@ module.exports.getCollection = async (req, res) => {
   }
   return res.status(400).send(`Impossible d'afficher les contacts`);
 };
+
 module.exports.getCollectionForCampaign = async (req, res) => {
-  const data = await findContactsForCampaign(req.campaign_id);
+  let { limit = 10, offset = 0 } = req.query;
+  const campaign_id = parseInt(req.campaign_id, 10);
+  limit = parseInt(limit, 10);
+  offset = parseInt(offset, 10);
+  const data = await findContactsForCampaign(campaign_id, limit, offset);
   if (data) {
     return res.status(200).json(data);
   }

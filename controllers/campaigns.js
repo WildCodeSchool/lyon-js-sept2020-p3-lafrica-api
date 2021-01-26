@@ -1,6 +1,7 @@
 const fs = require("fs");
 const path = require("path");
 const util = require("util");
+const Excel = require("exceljs");
 const {
   findUsersCampaigns,
   findOneCampaign,
@@ -174,7 +175,7 @@ module.exports.exportStatistics = async (req, res) => {
     },
   ];
   // need to create a workbook object. Almost everything in ExcelJS is based off of the workbook object.
-  const workbook = 1; /* new Excel.Workbook(); */
+  const workbook = new Excel.Workbook();
   const worksheet = workbook.addWorksheet("Debtors");
   worksheet.columns = [
     { header: "First Name", key: "firstName" },
@@ -203,9 +204,13 @@ module.exports.exportStatistics = async (req, res) => {
     });
   });
   // Keep in mind that reading and writing is promise based.
-  await workbook.xlsx.writeFile("Debtors.xlsx");
-  const myFile = "Debtors.xlsx";
-  const pathFile = path.join(`${__dirname}/../${myFile}`);
-  /* res.download(pathFile); */
+  const pathFile = path.join(
+    `${__dirname}/../file-storage/private/campaignsStatistics/Statistiques_NomDeCampagne.xlsx`
+  );
+  await workbook.xlsx.writeFile(pathFile);
+
+  /*   await workbook.xlsx.writeFile("Statistiques_NomDeCampagne.xlsx");
+  const myFile = "Statistiques_NomDeCampagne.xlsx";
+  const pathFile = path.join(`${__dirname}/../${myFile}`); */
   res.download(pathFile);
 };

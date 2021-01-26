@@ -130,5 +130,6 @@ module.exports.campaignSendingDateCheck = async () => {
     }
     serviceIsRunning = false;
   }
+  console.log('campaings list to send checked');
   return 'campaings list to send checked';
 };

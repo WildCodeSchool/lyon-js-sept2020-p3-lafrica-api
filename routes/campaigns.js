@@ -5,13 +5,17 @@ const campaignsController = require('../controllers/campaigns');
 const handleTextUpload = require('../middlewares/handleTextUpload');
 
 campaignsRouter.get('/', asyncHandler(campaignsController.getCollection));
-campaignsRouter.post('/', asyncHandler(campaignsController.createCampaignId));
-
-campaignsRouter.put(
+campaignsRouter.get('/audio', asyncHandler(campaignsController.playAudio));
+campaignsRouter.get(
   '/:campaignId',
-  asyncHandler(campaignsController.updateCampaign)
+  asyncHandler(campaignsController.getOneCampaign)
+);
+campaignsRouter.get(
+  '/downloadaudio',
+  asyncHandler(campaignsController.downloadAudio)
 );
 
+campaignsRouter.post('/', asyncHandler(campaignsController.createCampaignId));
 campaignsRouter.post(
   '/uploadtext',
   handleTextUpload,
@@ -19,15 +23,10 @@ campaignsRouter.post(
 );
 
 campaignsRouter.post('/TTS', asyncHandler(campaignsController.vocalization));
-campaignsRouter.get('/audio', asyncHandler(campaignsController.playAudio));
-campaignsRouter.get(
-  '/downloadaudio',
-  asyncHandler(campaignsController.downloadAudio)
-);
 
-campaignsRouter.get(
+campaignsRouter.put(
   '/:campaignId',
-  asyncHandler(campaignsController.getOneCampaign)
+  asyncHandler(campaignsController.updateCampaign)
 );
 
 module.exports = campaignsRouter;

@@ -99,8 +99,14 @@ module.exports.campaignSendingDateCheck = async () => {
                     res2.data.calls.forEach((call) => {
                       const formatedPhoneNumber = call.called.slice(2);
                       db.query(
-                        'UPDATE contact_in_mailing_campaign AS jointure JOIN contact ON jointure.contact_id = contact.id JOIN mailing_campaign ON mailing_campaign.id = jointure.mailing_campaign_id SET lam_contact_id = ? WHERE contact.phone_number = ? AND mailing_campaign.lam_campaign_id = ?',
-                        [call.contactId, formatedPhoneNumber, res2.data.id]
+                        'UPDATE contact_in_mailing_campaign AS jointure JOIN contact ON jointure.contact_id = contact.id JOIN mailing_campaign ON mailing_campaign.id = jointure.mailing_campaign_id SET lam_contact_id = ?, call_state_id = ?, call_result_id = ? WHERE contact.phone_number = ? AND mailing_campaign.lam_campaign_id = ?',
+                        [
+                          call.contactId,
+                          call.callStateId,
+                          call.callResultId,
+                          formatedPhoneNumber,
+                          res2.data.id,
+                        ]
                       );
                     });
                   }
@@ -126,22 +132,3 @@ module.exports.campaignSendingDateCheck = async () => {
   }
   return 'campaings list to send checked';
 };
-
-// module.exports.campaignHistory = async () => {
-//   let serviceIsRunning = false;
-//   if (!serviceIsRunning) {
-//     serviceIsRunning = true;
-//     const allContactToUpdate = await db.query(
-//       'SELECT * from contact_in_mailing_campaign JOIN WHERE callStatedId = 1'
-//     );
-//     if (allContactToUpdate.length === 0) {
-//       return null;
-//     }
-//     const callHistory = await db.query(
-//       'SELECT * from contact_in_mailing_campaign WHERE callStatedId = 1'
-//     );
-
-//     for (let i = 0; i < allContactToUpdate.length; i += 1) {
-
-//   }
-// };

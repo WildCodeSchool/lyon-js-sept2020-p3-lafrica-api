@@ -6,13 +6,18 @@ const {
   findOneCampaign,
   createCampaignId,
   updateCampaign,
+  findAllClientCampaigns,
 } = require('../models/campaigns');
 const WordFileReader = require('../helpers/handleReadWordFile');
 const textVocalization = require('../services/textToSpeech');
 
 module.exports.getCollection = async (req, res) => {
+  if (req.currentUser.role === 'admin') {
+    const data = await findAllClientCampaigns();
+    return res.json(data);
+  }
   const data = await findUsersCampaigns(req.currentUser.id);
-  res.json(data);
+  return res.json(data);
 };
 
 module.exports.getOneCampaign = async (req, res) => {

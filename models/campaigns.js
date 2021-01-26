@@ -23,6 +23,13 @@ module.exports.findOneCampaign = async (id) => {
   return null;
 };
 
+module.exports.findAllClientCampaigns = async () => {
+  const campaignData = await db.query(
+    'SELECT mailing_campaign.*, user.firstname, user.lastname, user.email FROM mailing_campaign JOIN user ON user.id = mailing_campaign.id_client_user'
+  );
+  return campaignData;
+};
+
 module.exports.createCampaignId = async (user_id) => {
   try {
     const data = await db.query(

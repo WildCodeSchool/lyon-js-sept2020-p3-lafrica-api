@@ -19,6 +19,7 @@ const handleServerInternalError = require('./middlewares/handleServerInternalErr
 const {
   campaignSendingDateCheck,
 } = require('./scripts/campaignSendingDateCheck');
+const { campaignHistoryCheck } = require('./scripts/campaignHistoryCheck');
 const handleFileTypeError = require('./middlewares/handleFileTypeError');
 
 const app = express();
@@ -97,6 +98,7 @@ process.on('beforeExit', () => {
 // scripts
 setInterval(() => {
   campaignSendingDateCheck();
+  campaignHistoryCheck();
 }, 60000);
 
 module.exports = server;

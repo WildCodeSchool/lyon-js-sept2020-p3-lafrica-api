@@ -11,6 +11,7 @@ COPY package*.json ./
 RUN npm install
 RUN npm install -g db-migrate
 RUN npm install -g db-migrate-mysql
+RUN npx prisma generate
 
 COPY . .
 

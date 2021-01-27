@@ -169,3 +169,13 @@ module.exports.assignContactsToCampaign = async (contactsList, campaignId) => {
     return err;
   }
 };
+
+module.exports.deleteCampaign = async (campaignId) => {
+  await db
+    .query('DELETE FROM mailing_campaign WHERE id = ?', [campaignId])
+    .catch((err) => {
+      console.log(err);
+      throw err;
+    });
+  return this.findOneCampaign(campaignId);
+};

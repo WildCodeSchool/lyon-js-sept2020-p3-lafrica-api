@@ -197,3 +197,13 @@ module.exports.stopCampaign = async (campaign_id) => {
   }
   return false;
 };
+
+module.exports.deleteCampaign = async (campaignId) => {
+  await db
+    .query('DELETE FROM mailing_campaign WHERE id = ?', [campaignId])
+    .catch((err) => {
+      console.log(err);
+      throw err;
+    });
+  return this.findOneCampaign(campaignId);
+};

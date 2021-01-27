@@ -34,4 +34,9 @@ campaignsRouter.put(
   asyncHandler(campaignsController.stopCampaign)
 );
 
+campaignsRouter.delete(
+  '/:campaignId',
+  asyncHandler(campaignsController.deleteCampaign)
+);
+
 module.exports = campaignsRouter;

@@ -1,19 +1,44 @@
 const fs = require('fs');
 const path = require('path');
 const util = require('util');
+const parseSortParams = require('../helpers/parseSortParams');
 
 const {
   findUsersCampaigns,
   findOneCampaign,
   createCampaignId,
   updateCampaign,
+  findAllClientCampaigns,
 } = require('../models/campaigns');
 const WordFileReader = require('../helpers/handleReadWordFile');
 const textVocalization = require('../services/textToSpeech');
 
 module.exports.getCollection = async (req, res) => {
-  const data = await findUsersCampaigns(req.currentUser.id);
-  res.json(data);
+  let { limit = 10, offset = 0 } = req.query;
+  const { name, sortby = 'date.asc', lastname, firstname } = req.query;
+  limit = parseInt(limit, 10);
+  offset = parseInt(offset, 10);
+  const orderBy = parseSortParams(sortby);
+
+  if (req.currentUser.role === 'admin') {
+    const [total, campaigns] = await findAllClientCampaigns(
+      limit,
+      offset,
+      name,
+      orderBy,
+      firstname,
+      lastname
+    );
+    return res.json({ total, campaigns });
+  }
+  const [total, campaigns] = await findUsersCampaigns(
+    req.currentUser.id,
+    limit,
+    offset,
+    name,
+    orderBy
+  );
+  return res.json({ total, campaigns });
 };
 
 module.exports.getOneCampaign = async (req, res) => {

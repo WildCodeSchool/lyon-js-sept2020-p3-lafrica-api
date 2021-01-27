@@ -1,14 +1,15 @@
 const db = require('../db');
+const { contact_in_mailing_campaign } = require('../db').prisma;
 
 const findOneContactFromItsId = async (contactId) => {
-  const contact = db
+  const contacts = db
     .query('SELECT * FROM contact WHERE id = ?', [contactId])
     .catch((err) => {
       console.log(err);
       throw err;
     });
-  if (contact) {
-    return contact;
+  if (contacts) {
+    return contacts;
   }
   return null;
 };
@@ -17,7 +18,7 @@ const findOneContactFromPhoneNumberAndIdUser = async (
   phone_number,
   currentUserId
 ) => {
-  const contact = db
+  const contacts = db
     .query(
       'SELECT * FROM contact WHERE phone_number = ? AND id_client_user = ?',
       [phone_number, currentUserId]
@@ -26,8 +27,8 @@ const findOneContactFromPhoneNumberAndIdUser = async (
       console.log(err);
       throw err;
     });
-  if (contact) {
-    return contact;
+  if (contacts) {
+    return contacts;
   }
   return null;
 };
@@ -36,11 +37,42 @@ module.exports.findAllContacts = (id) => {
   return db.query('SELECT * FROM contact WHERE id_client_user  = ?', [id]);
 };
 
-module.exports.findContactsForCampaign = (campaign_id) => {
-  return db.query(
-    'SELECT * FROM contact JOIN contact_in_mailing_campaign as cm ON contact.id = cm.contact_id WHERE cm.mailing_campaign_id = ?',
-    [campaign_id]
-  );
+module.exports.findContactsForCampaign = async (campaign_id, limit, offset) => {
+  // return db.query(
+  //   'SELECT * FROM contact JOIN contact_in_mailing_campaign as cm ON contact.id = cm.contact_id WHERE cm.mailing_campaign_id = ?',
+  //   [campaign_id]
+  // );
+  const dataset = await contact_in_mailing_campaign.findMany({
+    where: {
+      mailing_campaign_id: campaign_id,
+    },
+    take: limit,
+    skip: offset,
+    include: {
+      contact: true,
+    },
+  });
+
+  const total = (
+    await contact_in_mailing_campaign.aggregate({
+      where: {
+        mailing_campaign_id: campaign_id,
+      },
+      count: true,
+    })
+  ).count;
+
+  const result = dataset.map((data) => {
+    return {
+      id: data.contact.id,
+      lastname: data.contact.lastname,
+      firstname: data.contact.firstname,
+      phone_number: data.contact.phone_number,
+      mailing_campaign_id: campaign_id,
+    };
+  });
+
+  return [total, result];
 };
 
 const phoneNumberAlreadyExistsForThisUser = async (

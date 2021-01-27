@@ -15,7 +15,10 @@ const findOne = async (id, failIfNotFound = true) => {
 // Check if email already exist in DB
 
 const emailAlreadyExists = async (email) => {
-  const rows = await db.query('SELECT * FROM user WHERE email = ?', [email]);
+  const lowerCaseEmail = email.toLowerCase();
+  const rows = await db.query('SELECT * FROM user WHERE email = ?', [
+    lowerCaseEmail,
+  ]);
   if (rows.length) {
     return true;
   }
@@ -53,16 +56,20 @@ const hashPassword = async (password) => {
 const createUserInDatabase = async (newAttributes) => {
   await validate(newAttributes);
   const { firstname, lastname, email, password, phone_number } = newAttributes;
+  const lowerCaseEmail = email.toLowerCase();
   const encrypted_password = await hashPassword(password);
   const res = await db.query(
     'INSERT INTO user (firstname, lastname, email, encrypted_password, phone_number) VALUES (?, ?, ?, ?, ?)',
-    [firstname, lastname, email, encrypted_password, phone_number]
+    [firstname, lastname, lowerCaseEmail, encrypted_password, phone_number]
   );
-  return { firstname, lastname, email, id: res.insertId };
+  return { firstname, lastname, lowerCaseEmail, id: res.insertId };
 };
 
 const findByEmail = async (email, failIfNotFound = true) => {
-  const rows = await db.query(`SELECT * FROM user WHERE email = ?`, [email]);
+  const lowerCaseEmail = email.toLowerCase();
+  const rows = await db.query(`SELECT * FROM user WHERE email = ?`, [
+    lowerCaseEmail,
+  ]);
   if (rows.length) {
     return rows[0];
   }

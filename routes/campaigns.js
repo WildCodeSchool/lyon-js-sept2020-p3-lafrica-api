@@ -33,5 +33,9 @@ campaignsRouter.get(
   "/:campaignId/exportStatistics",
   asyncHandler(campaignsController.exportStatistics)
 );
+campaignsRouter.delete(
+  "/:campaignId",
+  asyncHandler(campaignsController.deleteCampaign)
+);
 
 module.exports = campaignsRouter;

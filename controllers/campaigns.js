@@ -9,6 +9,7 @@ const {
   createCampaignId,
   updateCampaign,
   findAllClientCampaigns,
+  deleteCampaign,
 } = require("../models/campaigns");
 const WordFileReader = require("../helpers/handleReadWordFile");
 const textVocalization = require("../services/textToSpeech");
@@ -238,4 +239,18 @@ module.exports.exportStatistics = async (req, res) => {
   const myFile = "Statistiques_NomDeCampagne.xlsx";
   const pathFile = path.join(`${__dirname}/../${myFile}`); */
   res.download(pathFile);
+};
+
+module.exports.deleteCampaign = async (req, res) => {
+  const campaignData = await findOneCampaign(req.params.campaignId);
+  if (campaignData.sending_status === 2) {
+    return res.status(200).send("La campagne a déjà été diffusée");
+  }
+  if (campaignData.sending_status !== 2) {
+    await deleteCampaign(req.params.campaignId);
+    return res.status(200).send("Le campagne a été supprimée");
+  }
+  return res
+    .status(500)
+    .send(`Un problème est survenu lors de la suppression de la campagne`);
 };

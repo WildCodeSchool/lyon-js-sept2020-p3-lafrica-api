@@ -34,15 +34,6 @@ module.exports.getCollectionForCampaign = async (req, res) => {
   return res.status(400).send(`Impossible d'afficher les contacts`);
 };
 
-const getCollectionForCampaignNoPagination = async (req, res) => {
-  const campaign_id = parseInt(req.campaign_id, 10);
-  const [total, contacts] = await findContactsForCampaign(campaign_id);
-  if (contacts) {
-    return res.status(200).json({ total, contacts });
-  }
-  return res.status(400).send(`Impossible d'afficher les contacts`);
-};
-
 module.exports.createContacts = async (req, res) => {
   const data = await createContacts(
     req.body,
@@ -96,10 +87,17 @@ module.exports.deleteContact = async (req, res) => {
 };
 
 module.exports.exportContacts = async (req, res) => {
-  const data = await findContactsForCampaign(req.campaign_id);
+  const campaignId = parseInt(req.campaign_id, 10);
+  // eslint-disable-next-line no-unused-vars
+  const [total, data] = await findContactsForCampaign(campaignId);
   if (data) {
     const workbook = new Excel.Workbook();
-    const worksheet = workbook.addWorksheet("Debtors");
+
+    const contactsFileName = Math.random()
+      .toString(36)
+      .replace(/[^a-z]+/g, "")
+      .substring(0, 5);
+    const worksheet = workbook.addWorksheet("Contacts");
     worksheet.columns = [
       { header: "Id", key: "id" },
       { header: "Nom de Famille", key: "lastname" },
@@ -117,7 +115,7 @@ module.exports.exportContacts = async (req, res) => {
       });
     });
     const pathFile = path.join(
-      `${__dirname}/../file-storage/private/contacts/contacts.xlsx`
+      `${__dirname}/../file-storage/private/contacts/${contactsFileName}.xlsx`
     );
     await workbook.xlsx.writeFile(pathFile);
     return res.status(200).download(pathFile);
@@ -126,10 +124,18 @@ module.exports.exportContacts = async (req, res) => {
 };
 
 module.exports.exportStatistics = async (req, res) => {
-  const data = await getCollectionForCampaignNoPagination(req.campaign_id);
+  const campaignId = parseInt(req.campaign_id, 10);
+  console.log(campaignId);
+  // eslint-disable-next-line no-unused-vars
+  const [total, data] = await findContactsForCampaign(campaignId);
   // need to create a workbook object. Almost everything in ExcelJS is based off of the workbook object.
   const workbook = new Excel.Workbook();
-  const worksheet = workbook.addWorksheet("Debtors");
+
+  const statisticsFileName = Math.random()
+    .toString(36)
+    .replace(/[^a-z]+/g, "")
+    .substring(0, 5);
+  const worksheet = workbook.addWorksheet("Statistiques");
   worksheet.columns = [
     { header: "Id", key: "id" },
     { header: "Nom de Famille", key: "lastname" },
@@ -151,7 +157,7 @@ module.exports.exportStatistics = async (req, res) => {
   });
 
   const pathFile = path.join(
-    `${__dirname}/../file-storage/private/campaignsStatistics/Statistiquesxlsx`
+    `${__dirname}/../file-storage/private/campaignsStatistics/${statisticsFileName}.xlsx`
   );
   await workbook.xlsx.writeFile(pathFile);
 

@@ -7,6 +7,12 @@ contactsRouter.get(
   "/",
   asyncHandler(contactsController.getCollectionForCampaign)
 );
+
+contactsRouter.get(
+  "/exportStatistics",
+  asyncHandler(contactsController.exportStatistics)
+);
+
 contactsRouter.post("/", asyncHandler(contactsController.createContacts));
 contactsRouter.put(
   "/:id_contact",
@@ -26,11 +32,6 @@ contactsRouter.post(
 contactsRouter.get(
   "/exportContacts",
   asyncHandler(contactsController.exportContacts)
-);
-
-contactsRouter.get(
-  "/exportStatistics",
-  asyncHandler(contactsController.exportStatistics)
 );
 
 module.exports = contactsRouter;

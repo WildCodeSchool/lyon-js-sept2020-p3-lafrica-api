@@ -15,14 +15,21 @@ const textVocalization = require('../services/textToSpeech');
 
 module.exports.getCollection = async (req, res) => {
   let { limit = 10, offset = 0 } = req.query;
-  const { name, sortby = 'date.asc' } = req.query;
+  const { name, sortby = 'date.asc', lastname, firstname } = req.query;
   limit = parseInt(limit, 10);
   offset = parseInt(offset, 10);
   const orderBy = parseSortParams(sortby);
 
   if (req.currentUser.role === 'admin') {
-    const data = await findAllClientCampaigns();
-    return res.json(data);
+    const [total, campaigns] = await findAllClientCampaigns(
+      limit,
+      offset,
+      name,
+      orderBy,
+      firstname,
+      lastname
+    );
+    return res.json({ total, campaigns });
   }
   const [total, campaigns] = await findUsersCampaigns(
     req.currentUser.id,

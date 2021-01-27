@@ -51,11 +51,58 @@ module.exports.findOneCampaign = async (id) => {
   return null;
 };
 
-module.exports.findAllClientCampaigns = async () => {
-  const campaignData = await db.query(
-    'SELECT mailing_campaign.*, user.firstname, user.lastname, user.email FROM mailing_campaign JOIN user ON user.id = mailing_campaign.id_client_user'
-  );
-  return campaignData;
+module.exports.findAllClientCampaigns = async (
+  limit,
+  offset,
+  name,
+  orderBy,
+  firstname,
+  lastname
+) => {
+  // const campaignData = await db.query(
+  //   'SELECT mailing_campaign.*, user.firstname, user.lastname, user.email FROM mailing_campaign JOIN user ON user.id = mailing_campaign.id_client_user'
+  // );
+  // return campaignData;
+  const campaigns = await mailing_campaign.findMany({
+    include: {
+      user: true,
+    },
+    where: {
+      name: {
+        contains: name || undefined,
+      },
+      user: {
+        firstname: {
+          contains: firstname || undefined,
+        },
+        lastname: {
+          contains: lastname || undefined,
+        },
+      },
+    },
+    orderBy,
+    take: limit,
+    skip: offset,
+  });
+
+  const total = (
+    await mailing_campaign.aggregate({
+      count: true,
+    })
+  ).count;
+
+  const result = campaigns.map((campaign) => {
+    const newData = {
+      ...campaign,
+      firstname: campaign.user.firstname,
+      lastname: campaign.user.lastname,
+      email: campaign.user.email,
+    };
+    delete newData.user;
+    return newData;
+  });
+
+  return [total, result];
 };
 
 module.exports.createCampaignId = async (user_id) => {

@@ -1,12 +1,40 @@
 const db = require("../db");
+const { mailing_campaign } = require("../db").prisma;
 
 module.exports.findAllCampaigns = (id) => {
   return db.query("SELECT * FROM mailing_campaign WHERE id = ?", [id]);
 };
-module.exports.findUsersCampaigns = (id) => {
-  return db.query("SELECT * FROM mailing_campaign WHERE id_client_user = ?", [
-    id,
-  ]);
+module.exports.findUsersCampaigns = async (
+  id,
+  limit,
+  offset,
+  name,
+  orderBy
+) => {
+  // return db.query('SELECT * FROM mailing_campaign WHERE id_client_user = ?', [
+  //   id,
+  // ]);
+  const campaigns = await mailing_campaign.findMany({
+    where: {
+      id_client_user: id,
+      name: {
+        contains: name || undefined,
+      },
+    },
+    orderBy,
+    take: limit,
+    skip: offset,
+  });
+
+  const total = (
+    await mailing_campaign.aggregate({
+      where: {
+        id_client_user: id,
+      },
+      count: true,
+    })
+  ).count;
+  return [total, campaigns];
 };
 
 module.exports.findOneCampaign = async (id) => {
@@ -21,6 +49,60 @@ module.exports.findOneCampaign = async (id) => {
     return campaignData;
   }
   return null;
+};
+
+module.exports.findAllClientCampaigns = async (
+  limit,
+  offset,
+  name,
+  orderBy,
+  firstname,
+  lastname
+) => {
+  // const campaignData = await db.query(
+  //   'SELECT mailing_campaign.*, user.firstname, user.lastname, user.email FROM mailing_campaign JOIN user ON user.id = mailing_campaign.id_client_user'
+  // );
+  // return campaignData;
+  const campaigns = await mailing_campaign.findMany({
+    include: {
+      user: true,
+    },
+    where: {
+      name: {
+        contains: name || undefined,
+      },
+      user: {
+        firstname: {
+          contains: firstname || undefined,
+        },
+        lastname: {
+          contains: lastname || undefined,
+        },
+      },
+    },
+    orderBy,
+    take: limit,
+    skip: offset,
+  });
+
+  const total = (
+    await mailing_campaign.aggregate({
+      count: true,
+    })
+  ).count;
+
+  const result = campaigns.map((campaign) => {
+    const newData = {
+      ...campaign,
+      firstname: campaign.user.firstname,
+      lastname: campaign.user.lastname,
+      email: campaign.user.email,
+    };
+    delete newData.user;
+    return newData;
+  });
+
+  return [total, result];
 };
 
 module.exports.createCampaignId = async (user_id) => {

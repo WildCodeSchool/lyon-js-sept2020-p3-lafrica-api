@@ -1,0 +1,85 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DB_URL")
+}
+
+model contact {
+  id                          Int                           @id @default(autoincrement())
+  lastname                    String?
+  firstname                   String?
+  phone_number                String
+  id_client_user              Int?
+  user                        user?                         @relation(fields: [id_client_user], references: [id])
+  contact_in_mailing_campaign contact_in_mailing_campaign[]
+
+  @@index([id_client_user], name: "fk_contact_client user1_idx")
+}
+
+model contact_in_mailing_campaign {
+  contact_id          Int
+  mailing_campaign_id Int
+  sending_status      String
+  lam_contact_id      Int?
+  call_state_id       Int?
+  call_result_id      Int?
+  contact             contact          @relation(fields: [contact_id], references: [id])
+  mailing_campaign    mailing_campaign @relation(fields: [mailing_campaign_id], references: [id])
+
+  @@id([contact_id, mailing_campaign_id])
+  @@index([contact_id], name: "fk_contact_has_mailing_campaign_contact1_idx")
+  @@index([mailing_campaign_id], name: "fk_contact_has_mailing_campaign_mailing_campaign1_idx")
+}
+
+model mailing_campaign {
+  id                          Int                           @id @default(autoincrement())
+  id_client_user              Int
+  name                        String?
+  text_message                String?
+  vocal_message_file_url      String?
+  date                        DateTime?
+  sending_status              Int                           @default(0)
+  lam_campaign_id             Int?
+  count                       Int?
+  call_success_count          Int?
+  call_failed_count           Int?
+  call_ignored_count          Int?
+  user                        user                          @relation(fields: [id_client_user], references: [id])
+  contact_in_mailing_campaign contact_in_mailing_campaign[]
+
+  @@index([id_client_user], name: "fk_mailing_campaign_client user1_idx")
+}
+
+model migrations {
+  id     Int      @id @default(autoincrement())
+  name   String
+  run_on DateTime
+}
+
+model sessions {
+  session_id String  @id
+  expires    Int
+  data       String?
+}
+
+model user {
+  id                   Int                @id @default(autoincrement())
+  firstname            String
+  lastname             String
+  email                String
+  encrypted_password   String
+  phone_number         String
+  role                 String?
+  manager_id           Int?
+  resetPasswordToken   String?
+  resetPasswordExpires DateTime?
+  user                 user?              @relation("userTouser_manager_id", fields: [manager_id], references: [id])
+  contact              contact[]
+  mailing_campaign     mailing_campaign[]
+  other_user           user[]             @relation("userTouser_manager_id")
+
+  @@index([manager_id], name: "fk_user_user1_idx")
+}

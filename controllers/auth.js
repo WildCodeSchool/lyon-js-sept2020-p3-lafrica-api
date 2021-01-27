@@ -17,7 +17,7 @@ module.exports.login = async (req, res) => {
     if (req.body.stayConnected) {
       req.session.cookie.maxAge = 7 * 24 * 60 * 60 * 1000;
     }
-    req.session.cookie.maxAge = 60 * 60 * 1000;
+    req.session.cookie.maxAge = 24 * 60 * 60 * 1000;
     req.session.userId = user.id;
     req.session.save((err) => {
       if (err) return res.sendStatus(500);
@@ -25,6 +25,7 @@ module.exports.login = async (req, res) => {
         id: user.id,
         firstname: user.firstname,
         lastname: user.lastname,
+        role: user.role,
       };
       return res.status(200).json(userDetails);
     });

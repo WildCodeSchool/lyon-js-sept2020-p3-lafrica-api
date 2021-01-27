@@ -29,10 +29,6 @@ campaignsRouter.put(
   asyncHandler(campaignsController.updateCampaign)
 );
 
-campaignsRouter.get(
-  "/:campaignId/exportStatistics",
-  asyncHandler(campaignsController.exportStatistics)
-);
 campaignsRouter.delete(
   "/:campaignId",
   asyncHandler(campaignsController.deleteCampaign)

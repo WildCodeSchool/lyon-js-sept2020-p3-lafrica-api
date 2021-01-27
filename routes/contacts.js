@@ -28,4 +28,9 @@ contactsRouter.get(
   asyncHandler(contactsController.exportContacts)
 );
 
+contactsRouter.get(
+  "/exportStatistics",
+  asyncHandler(contactsController.exportStatistics)
+);
+
 module.exports = contactsRouter;

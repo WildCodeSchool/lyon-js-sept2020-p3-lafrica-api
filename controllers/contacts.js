@@ -34,6 +34,15 @@ module.exports.getCollectionForCampaign = async (req, res) => {
   return res.status(400).send(`Impossible d'afficher les contacts`);
 };
 
+const getCollectionForCampaignNoPagination = async (req, res) => {
+  const campaign_id = parseInt(req.campaign_id, 10);
+  const [total, contacts] = await findContactsForCampaign(campaign_id);
+  if (contacts) {
+    return res.status(200).json({ total, contacts });
+  }
+  return res.status(400).send(`Impossible d'afficher les contacts`);
+};
+
 module.exports.createContacts = async (req, res) => {
   const data = await createContacts(
     req.body,
@@ -81,9 +90,9 @@ module.exports.readContacts = async (req, res) => {
 module.exports.deleteContact = async (req, res) => {
   const data = await deleteContact(req.params.id_contact, req.campaign_id);
   if (data) {
-    return res.status(200).send("Le contact a été suprrimé");
+    return res.status(200).send("Le contact a été supprimé");
   }
-  return res.status(400).send(`Impossible de suprrimer le contact`);
+  return res.status(400).send(`Impossible de supprimer le contact`);
 };
 
 module.exports.exportContacts = async (req, res) => {
@@ -114,4 +123,37 @@ module.exports.exportContacts = async (req, res) => {
     return res.status(200).download(pathFile);
   }
   return res.status(400).send(`Impossible d'afficher les contacts`);
+};
+
+module.exports.exportStatistics = async (req, res) => {
+  const data = await getCollectionForCampaignNoPagination(req.campaign_id);
+  // need to create a workbook object. Almost everything in ExcelJS is based off of the workbook object.
+  const workbook = new Excel.Workbook();
+  const worksheet = workbook.addWorksheet("Debtors");
+  worksheet.columns = [
+    { header: "Id", key: "id" },
+    { header: "Nom de Famille", key: "lastname" },
+    { header: "Prénom", key: "firstname" },
+    { header: "Télephone", key: "phone_number" },
+    { header: "Statut d'envoi", key: "sending_status" },
+  ];
+  worksheet.columns.forEach((column) => {
+    // eslint-disable-next-line no-param-reassign
+    column.width = column.header.length < 12 ? 12 : column.header.length;
+  });
+
+  worksheet.getRow(1).font = { bold: true };
+
+  data.forEach((e) => {
+    worksheet.addRow({
+      ...e,
+    });
+  });
+
+  const pathFile = path.join(
+    `${__dirname}/../file-storage/private/campaignsStatistics/Statistiquesxlsx`
+  );
+  await workbook.xlsx.writeFile(pathFile);
+
+  res.download(pathFile);
 };

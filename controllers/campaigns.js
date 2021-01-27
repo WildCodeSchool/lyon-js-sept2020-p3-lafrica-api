@@ -1,6 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 const util = require('util');
+const parseSortParams = require('../helpers/parseSortParams');
 
 const {
   findUsersCampaigns,
@@ -12,8 +13,19 @@ const WordFileReader = require('../helpers/handleReadWordFile');
 const textVocalization = require('../services/textToSpeech');
 
 module.exports.getCollection = async (req, res) => {
-  const data = await findUsersCampaigns(req.currentUser.id);
-  res.json(data);
+  let { limit = 10, offset = 0 } = req.query;
+  const { name, sortby = 'date.asc' } = req.query;
+  limit = parseInt(limit, 10);
+  offset = parseInt(offset, 10);
+  const orderBy = parseSortParams(sortby);
+  const [total, campaigns] = await findUsersCampaigns(
+    req.currentUser.id,
+    limit,
+    offset,
+    name,
+    orderBy
+  );
+  res.json({ total, campaigns });
 };
 
 module.exports.getOneCampaign = async (req, res) => {

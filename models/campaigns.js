@@ -1,12 +1,40 @@
 const db = require('../db');
+const { mailing_campaign } = require('../db').prisma;
 
 module.exports.findAllCampaigns = (id) => {
   return db.query('SELECT * FROM mailing_campaign WHERE id = ?', [id]);
 };
-module.exports.findUsersCampaigns = (id) => {
-  return db.query('SELECT * FROM mailing_campaign WHERE id_client_user = ?', [
-    id,
-  ]);
+module.exports.findUsersCampaigns = async (
+  id,
+  limit,
+  offset,
+  name,
+  orderBy
+) => {
+  // return db.query('SELECT * FROM mailing_campaign WHERE id_client_user = ?', [
+  //   id,
+  // ]);
+  const campaigns = await mailing_campaign.findMany({
+    where: {
+      id_client_user: id,
+      name: {
+        contains: name || undefined,
+      },
+    },
+    orderBy,
+    take: limit,
+    skip: offset,
+  });
+
+  const total = (
+    await mailing_campaign.aggregate({
+      where: {
+        id_client_user: id,
+      },
+      count: true,
+    })
+  ).count;
+  return [total, campaigns];
 };
 
 module.exports.findOneCampaign = async (id) => {

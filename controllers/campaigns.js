@@ -9,6 +9,7 @@ const {
   createCampaignId,
   updateCampaign,
   findAllClientCampaigns,
+  stopCampaign,
 } = require('../models/campaigns');
 const WordFileReader = require('../helpers/handleReadWordFile');
 const textVocalization = require('../services/textToSpeech');
@@ -134,4 +135,16 @@ module.exports.updateCampaign = async (req, res) => {
   return res
     .status(500)
     .send('Something went wrong uploading campaigns database');
+};
+
+module.exports.stopCampaign = async (req, res) => {
+  const campaign_id = req.params.campaignId;
+
+  const result = await stopCampaign(campaign_id);
+  if (result) {
+    return res.status(200).json(result);
+  }
+  return res.status(400).json({
+    error: 'This campaign has already been send and cannot be canceled',
+  });
 };

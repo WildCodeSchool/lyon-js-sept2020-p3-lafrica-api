@@ -38,6 +38,7 @@ module.exports.campaignSendingDateCheck = async () => {
         allCampaignsList[i].name &&
         allCampaignsList[i].text_message &&
         allCampaignsList[i].vocal_message_file_url &&
+        allCampaignsList[i].date &&
         allCampaignsList[i].date <= dateNow
       ) {
         const vocalisationFileName = `${allCampaignsList[i].vocal_message_file_url}`;
@@ -87,7 +88,7 @@ module.exports.campaignSendingDateCheck = async () => {
                   contacts: phoneNumbersArray,
                 })
                 .then((res2) => {
-                  if (res2) {
+                  if (res2.data.calls) {
                     db.query(
                       'UPDATE mailing_campaign SET sending_status = 2 WHERE id = ?',
                       [allCampaignsList[i].id]

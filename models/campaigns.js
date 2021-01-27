@@ -169,3 +169,31 @@ module.exports.assignContactsToCampaign = async (contactsList, campaignId) => {
     return err;
   }
 };
+
+const checkIfCampaignNotSend = async (id) => {
+  const check = await db.query(
+    'SELECT * from mailing_campaign WHERE id = ? AND sending_status != 2',
+    [id]
+  );
+
+  // const date = Date.now() + 3600000; // 1 hour
+  // const tokenExpires = new Date(date);
+
+  if (check.length) {
+    return true;
+  }
+  return false;
+};
+
+module.exports.stopCampaign = async (campaign_id) => {
+  const check = await checkIfCampaignNotSend(campaign_id);
+  if (check) {
+    await db.query(
+      'UPDATE mailing_campaign SET date = NULL, sending_status = 0 WHERE id = ?',
+      [campaign_id]
+    );
+    const result = await this.findOneCampaign(campaign_id);
+    return result;
+  }
+  return false;
+};

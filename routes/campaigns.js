@@ -29,4 +29,9 @@ campaignsRouter.put(
   asyncHandler(campaignsController.updateCampaign)
 );
 
+campaignsRouter.put(
+  '/:campaignId/stop',
+  asyncHandler(campaignsController.stopCampaign)
+);
+
 module.exports = campaignsRouter;

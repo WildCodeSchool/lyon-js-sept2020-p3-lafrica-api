@@ -1,8 +1,8 @@
 const fs = require("fs");
 const path = require("path");
 const util = require("util");
-const parseSortParams = require("../helpers/parseSortParams");
 const Excel = require("exceljs");
+const parseSortParams = require("../helpers/parseSortParams");
 const {
   findUsersCampaigns,
   findOneCampaign,

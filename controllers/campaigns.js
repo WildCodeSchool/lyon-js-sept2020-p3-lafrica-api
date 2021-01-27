@@ -8,6 +8,7 @@ const {
   findOneCampaign,
   createCampaignId,
   updateCampaign,
+  findAllClientCampaigns,
 } = require('../models/campaigns');
 const WordFileReader = require('../helpers/handleReadWordFile');
 const textVocalization = require('../services/textToSpeech');
@@ -18,6 +19,11 @@ module.exports.getCollection = async (req, res) => {
   limit = parseInt(limit, 10);
   offset = parseInt(offset, 10);
   const orderBy = parseSortParams(sortby);
+
+  if (req.currentUser.role === 'admin') {
+    const data = await findAllClientCampaigns();
+    return res.json(data);
+  }
   const [total, campaigns] = await findUsersCampaigns(
     req.currentUser.id,
     limit,
@@ -25,7 +31,7 @@ module.exports.getCollection = async (req, res) => {
     name,
     orderBy
   );
-  res.json({ total, campaigns });
+  return res.json({ total, campaigns });
 };
 
 module.exports.getOneCampaign = async (req, res) => {

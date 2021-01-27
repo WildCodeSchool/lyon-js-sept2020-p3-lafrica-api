@@ -176,11 +176,16 @@ const checkIfCampaignNotSend = async (id) => {
     [id]
   );
 
-  // const date = Date.now() + 3600000; // 1 hour
-  // const tokenExpires = new Date(date);
+  const date = Date.now() - 180000; // 3 minutes
+  const formated_date = new Date(date);
+  console.log(formated_date);
+  console.log(check[0]);
 
   if (check.length) {
-    return true;
+    if (check[0].date > formated_date || !check[0].date) {
+      return true;
+    }
+    return false;
   }
   return false;
 };

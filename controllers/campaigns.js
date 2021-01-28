@@ -148,6 +148,7 @@ module.exports.stopCampaign = async (req, res) => {
     error: 'This campaign has already been send and cannot be canceled',
   });
 };
+
 module.exports.deleteCampaign = async (req, res) => {
   const campaignData = await findOneCampaign(req.params.campaignId);
   if (campaignData.sending_status === 2) {

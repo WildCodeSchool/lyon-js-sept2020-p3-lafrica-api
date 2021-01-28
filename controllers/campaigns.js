@@ -1,8 +1,7 @@
-const fs = require('fs');
-const path = require('path');
-const util = require('util');
-const parseSortParams = require('../helpers/parseSortParams');
-
+const fs = require("fs");
+const path = require("path");
+const util = require("util");
+const parseSortParams = require("../helpers/parseSortParams");
 const {
   findUsersCampaigns,
   findOneCampaign,
@@ -11,18 +10,18 @@ const {
   findAllClientCampaigns,
   stopCampaign,
   deleteCampaign,
-} = require('../models/campaigns');
-const WordFileReader = require('../helpers/handleReadWordFile');
-const textVocalization = require('../services/textToSpeech');
+} = require("../models/campaigns");
+const WordFileReader = require("../helpers/handleReadWordFile");
+const textVocalization = require("../services/textToSpeech");
 
 module.exports.getCollection = async (req, res) => {
   let { limit = 10, offset = 0 } = req.query;
-  const { name, sortby = 'date.asc', lastname, firstname } = req.query;
+  const { name, sortby = "date.asc", lastname, firstname } = req.query;
   limit = parseInt(limit, 10);
   offset = parseInt(offset, 10);
   const orderBy = parseSortParams(sortby);
 
-  if (req.currentUser.role === 'admin') {
+  if (req.currentUser.role === "admin") {
     const [total, campaigns] = await findAllClientCampaigns(
       limit,
       offset,
@@ -58,10 +57,10 @@ module.exports.playAudio = async (req, res) => {
   const audioFile = `${req.query.audio}`;
   const pathFile = path.join(`${__dirname}/../file-storage/private`);
   const stream = fs.createReadStream(`${pathFile}/${audioFile}`);
-  stream.on('error', () => {
+  stream.on("error", () => {
     res
       .status(404)
-      .json({ errorMessage: 'The requested audio file does not exist' });
+      .json({ errorMessage: "The requested audio file does not exist" });
   });
   stream.pipe(res);
 };
@@ -80,24 +79,24 @@ module.exports.readText = async (req, res) => {
   const fileExtension = path.extname(req.file.path);
   let uploadedTextToVocalize;
   switch (fileExtension) {
-    case '.txt':
+    case ".txt":
       try {
-        uploadedTextToVocalize = await readfile(req.file.path, 'utf-8');
+        uploadedTextToVocalize = await readfile(req.file.path, "utf-8");
         break;
       } catch (err) {
         console.error(err);
         return res
           .status(500)
-          .send('Something went wrong in reading .txt file');
+          .send("Something went wrong in reading .txt file");
       }
-    case '.docx':
+    case ".docx":
       try {
         uploadedTextToVocalize = await WordFileReader.extract(req.file.path);
       } catch (err) {
         console.error(err);
         return res
           .status(500)
-          .send('Something went wrong in reading .docx file');
+          .send("Something went wrong in reading .docx file");
       }
       break;
     default:
@@ -119,7 +118,7 @@ module.exports.createCampaignId = async (req, res) => {
   }
   return res
     .status(500)
-    .send('Something went wrong uploading campaigns database');
+    .send("Something went wrong uploading campaigns database");
 };
 
 module.exports.updateCampaign = async (req, res) => {
@@ -135,7 +134,7 @@ module.exports.updateCampaign = async (req, res) => {
   }
   return res
     .status(500)
-    .send('Something went wrong uploading campaigns database');
+    .send("Something went wrong uploading campaigns database");
 };
 
 module.exports.stopCampaign = async (req, res) => {
@@ -152,11 +151,11 @@ module.exports.stopCampaign = async (req, res) => {
 module.exports.deleteCampaign = async (req, res) => {
   const campaignData = await findOneCampaign(req.params.campaignId);
   if (campaignData.sending_status === 2) {
-    return res.status(200).send('La campagne a déjà été diffusée');
+    return res.status(200).send("La campagne a déjà été diffusée");
   }
   if (campaignData.sending_status !== 2) {
     await deleteCampaign(req.params.campaignId);
-    return res.status(200).send('Le campagne a été supprimée');
+    return res.status(200).send("Le campagne a été supprimée");
   }
   return res
     .status(500)

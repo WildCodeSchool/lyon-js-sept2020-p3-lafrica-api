@@ -16,10 +16,10 @@ module.exports.findUsersCampaigns = async (
   name,
   orderBy
 ) => {
-  const test = await db.query(
-    'SELECT * FROM mailing_campaign WHERE id_client_user = ?',
-    [id]
-  );
+  // const campaigns = await db.query(
+  //   'SELECT * FROM mailing_campaign WHERE id_client_user = ?',
+  //   [id]
+  // );
   const campaigns = await mailing_campaign.findMany({
     where: {
       id_client_user: id,
@@ -31,9 +31,6 @@ module.exports.findUsersCampaigns = async (
     take: limit,
     skip: offset,
   });
-
-  console.log(test);
-  console.log(campaigns);
 
   const total = (
     await mailing_campaign.aggregate({
@@ -56,7 +53,6 @@ module.exports.findOneCampaign = async (id) => {
       id: parseInt(id, 10),
     },
   });
-  console.log(campaignData);
 
   if (campaignData) {
     // const contactsListCampaign = await db.query(
@@ -146,9 +142,7 @@ module.exports.updateCampaign = async (campaign_id, campaignDatas) => {
     campaign_vocal,
     campaign_date,
   } = campaignDatas;
-  console.log('unformated', campaign_date);
   const campaign_date_formated = new Date(campaign_date);
-  console.log(campaign_date_formated);
   try {
     // await db.query(
     //   'UPDATE mailing_campaign SET name = ?, text_message = ?, vocal_message_file_url = ?, date = ?  where id = ?',
@@ -202,15 +196,25 @@ module.exports.assignContactsToCampaign = async (contactsList, campaignId) => {
 };
 
 const checkIfCampaignNotSend = async (id) => {
-  const check = await db.query(
-    'SELECT * from mailing_campaign WHERE id = ? AND sending_status != 2',
-    [id]
-  );
+  // const check = await db.query(
+  //   'SELECT * from mailing_campaign WHERE id = ? AND sending_status != 2',
+  //   [id]
+  // );
 
-  const date = Date.now() - 180000; // 3 minutes
+  const check = await mailing_campaign.findMany({
+    where: {
+      id: parseInt(id, 10),
+      sending_status: {
+        not: 2,
+      },
+    },
+  });
+
+  const date = Date.now() - 180000;
   const formated_date = new Date(date);
-  console.log(formated_date);
-  console.log(check[0]);
+
+  // Check if the campain date is > now minus 3 minutes
+  // If not, the campaign cannot be stopped to avoid issues with campaignSendingDateCheck
 
   if (check.length) {
     if (check[0].date > formated_date || !check[0].date) {

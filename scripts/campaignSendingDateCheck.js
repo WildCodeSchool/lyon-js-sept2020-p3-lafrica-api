@@ -18,7 +18,6 @@ module.exports.campaignSendingDateCheck = async () => {
         OR: [{ sending_status: 0 }, { sending_status: 1 }],
       },
     });
-    console.log(allCampaignsList);
 
     if (allCampaignsList.length === 0) {
       return null;

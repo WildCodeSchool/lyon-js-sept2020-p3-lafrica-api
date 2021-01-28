@@ -1,14 +1,14 @@
-const xlsx = require('xlsx');
-const Excel = require('exceljs');
-const path = require('path');
-const fs = require('fs');
+const xlsx = require("xlsx");
+const Excel = require("exceljs");
+const path = require("path");
+const fs = require("fs");
 const {
   findAllContacts,
   createContacts,
   modifyContact,
   deleteContact,
   findContactsForCampaign,
-} = require('../models/contacts');
+} = require("../models/contacts");
 
 module.exports.getCollection = async (req, res) => {
   const data = await findAllContacts(req.currentUser.id);
@@ -81,7 +81,7 @@ module.exports.readContacts = async (req, res) => {
 module.exports.deleteContact = async (req, res) => {
   const data = await deleteContact(req.params.id_contact, req.campaign_id);
   if (data) {
-    return res.status(200).send('Le contact a été supprimé');
+    return res.status(200).send("Le contact a été supprimé");
   }
   return res.status(400).send(`Impossible de supprimer le contact`);
 };
@@ -95,14 +95,13 @@ module.exports.exportContacts = async (req, res) => {
 
     const contactsFileName = Math.random()
       .toString(36)
-      .replace(/[^a-z]+/g, '')
+      .replace(/[^a-z]+/g, "")
       .substring(0, 5);
-    const worksheet = workbook.addWorksheet('Contacts');
+    const worksheet = workbook.addWorksheet("Contacts");
     worksheet.columns = [
-      { header: 'Id', key: 'id' },
-      { header: 'Nom de Famille', key: 'lastname' },
-      { header: 'Prénom', key: 'firstname' },
-      { header: 'Télephone', key: 'phone_number' },
+      { header: "lastname", key: "lastname" },
+      { header: "firstname", key: "firstname" },
+      { header: "phone_number", key: "phone_number" },
     ];
     worksheet.columns.forEach((column) => {
       // eslint-disable-next-line no-param-reassign
@@ -133,15 +132,14 @@ module.exports.exportStatistics = async (req, res) => {
 
   const statisticsFileName = Math.random()
     .toString(36)
-    .replace(/[^a-z]+/g, '')
+    .replace(/[^a-z]+/g, "")
     .substring(0, 5);
-  const worksheet = workbook.addWorksheet('Statistiques');
+  const worksheet = workbook.addWorksheet("Statistiques");
   worksheet.columns = [
-    { header: 'Id', key: 'id' },
-    { header: 'Nom de Famille', key: 'lastname' },
-    { header: 'Prénom', key: 'firstname' },
-    { header: 'Télephone', key: 'phone_number' },
-    { header: "Statut d'envoi", key: 'sending_status' },
+    { header: "lastname", key: "lastname" },
+    { header: "firstname", key: "firstname" },
+    { header: "phone_number", key: "phone_number" },
+    { header: "sending_status", key: "sending_status" },
   ];
   worksheet.columns.forEach((column) => {
     // eslint-disable-next-line no-param-reassign

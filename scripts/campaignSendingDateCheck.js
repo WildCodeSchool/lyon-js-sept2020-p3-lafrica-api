@@ -3,15 +3,22 @@ const FormData = require('form-data');
 const fs = require('fs');
 const path = require('path');
 const db = require('../db');
+const { mailing_campaign } = require('../db').prisma;
 const { LAM_API_LOGIN, LAM_API_PASSWORD } = require('../env');
 
 module.exports.campaignSendingDateCheck = async () => {
   let serviceIsRunning = false;
   if (!serviceIsRunning) {
     serviceIsRunning = true;
-    const allCampaignsList = await db.query(
-      'SELECT * from mailing_campaign WHERE sending_status = 0 OR sending_status = 1'
-    );
+    // const allCampaignsList = await db.query(
+    //   'SELECT * from mailing_campaign WHERE sending_status = 0 OR sending_status = 1'
+    // );
+    const allCampaignsList = await mailing_campaign.findMany({
+      where: {
+        OR: [{ sending_status: 0 }, { sending_status: 1 }],
+      },
+    });
+    console.log(allCampaignsList);
 
     if (allCampaignsList.length === 0) {
       return null;

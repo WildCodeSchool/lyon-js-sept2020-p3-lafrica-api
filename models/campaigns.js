@@ -2,7 +2,12 @@ const db = require('../db');
 const { mailing_campaign } = require('../db').prisma;
 
 module.exports.findAllCampaigns = (id) => {
-  return db.query('SELECT * FROM mailing_campaign WHERE id = ?', [id]);
+  // return db.query('SELECT * FROM mailing_campaign WHERE id = ?', [id]);
+  return mailing_campaign.findMany({
+    where: {
+      id: parseInt(id, 10),
+    },
+  });
 };
 module.exports.findUsersCampaigns = async (
   id,
@@ -11,9 +16,10 @@ module.exports.findUsersCampaigns = async (
   name,
   orderBy
 ) => {
-  // return db.query('SELECT * FROM mailing_campaign WHERE id_client_user = ?', [
-  //   id,
-  // ]);
+  const test = await db.query(
+    'SELECT * FROM mailing_campaign WHERE id_client_user = ?',
+    [id]
+  );
   const campaigns = await mailing_campaign.findMany({
     where: {
       id_client_user: id,
@@ -25,6 +31,9 @@ module.exports.findUsersCampaigns = async (
     take: limit,
     skip: offset,
   });
+
+  console.log(test);
+  console.log(campaigns);
 
   const total = (
     await mailing_campaign.aggregate({
@@ -38,9 +47,17 @@ module.exports.findUsersCampaigns = async (
 };
 
 module.exports.findOneCampaign = async (id) => {
-  const [
-    campaignData,
-  ] = await db.query('SELECT * FROM mailing_campaign WHERE id = ?', [id]);
+  // const [
+  //   campaignData,
+  // ] = await db.query('SELECT * FROM mailing_campaign WHERE id = ?', [id]);
+
+  const campaignData = await mailing_campaign.findUnique({
+    where: {
+      id: parseInt(id, 10),
+    },
+  });
+  console.log(campaignData);
+
   if (campaignData) {
     // const contactsListCampaign = await db.query(
     //   'SELECT contact.id, contact.lastname, contact.firstname, contact.phone_number contact_id FROM `contact_in_mailing_campaign` JOIN contact WHERE mailing_campaign_id = ?',
@@ -129,18 +146,32 @@ module.exports.updateCampaign = async (campaign_id, campaignDatas) => {
     campaign_vocal,
     campaign_date,
   } = campaignDatas;
+  console.log('unformated', campaign_date);
   const campaign_date_formated = new Date(campaign_date);
+  console.log(campaign_date_formated);
   try {
-    await db.query(
-      'UPDATE mailing_campaign SET name = ?, text_message = ?, vocal_message_file_url = ?, date = ?  where id = ?',
-      [
-        campaign_name,
-        campaign_text,
-        campaign_vocal,
-        campaign_date_formated,
-        campaign_id,
-      ]
-    );
+    // await db.query(
+    //   'UPDATE mailing_campaign SET name = ?, text_message = ?, vocal_message_file_url = ?, date = ?  where id = ?',
+    //   [
+    //     campaign_name,
+    //     campaign_text,
+    //     campaign_vocal,
+    //     campaign_date_formated,
+    //     campaign_id,
+    //   ]
+    // );
+    await mailing_campaign.update({
+      data: {
+        name: campaign_name,
+        text_message: campaign_text,
+        vocal_message_file_url: campaign_vocal,
+        date: campaign_date_formated,
+      },
+      where: {
+        id: parseInt(campaign_id, 10),
+      },
+    });
+
     const data = await this.findOneCampaign(campaign_id);
     return data;
   } catch (err) {

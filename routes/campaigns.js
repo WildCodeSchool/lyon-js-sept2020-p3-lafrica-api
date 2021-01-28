@@ -4,14 +4,20 @@ const asyncHandler = require('express-async-handler');
 const campaignsController = require('../controllers/campaigns');
 const handleTextUpload = require('../middlewares/handleTextUpload');
 
-campaignsRouter.get('/', asyncHandler(campaignsController.getCollection));
-campaignsRouter.post('/', asyncHandler(campaignsController.createCampaignId));
-
-campaignsRouter.put(
-  '/:campaignId',
-  asyncHandler(campaignsController.updateCampaign)
+campaignsRouter.get(
+  '/downloadaudio',
+  asyncHandler(campaignsController.downloadAudio)
 );
 
+campaignsRouter.get('/', asyncHandler(campaignsController.getCollection));
+campaignsRouter.get('/audio', asyncHandler(campaignsController.playAudio));
+campaignsRouter.get('/template', asyncHandler(campaignsController.getTemplate));
+campaignsRouter.get(
+  '/:campaignId',
+  asyncHandler(campaignsController.getOneCampaign)
+);
+
+campaignsRouter.post('/', asyncHandler(campaignsController.createCampaignId));
 campaignsRouter.post(
   '/uploadtext',
   handleTextUpload,
@@ -19,15 +25,20 @@ campaignsRouter.post(
 );
 
 campaignsRouter.post('/TTS', asyncHandler(campaignsController.vocalization));
-campaignsRouter.get('/audio', asyncHandler(campaignsController.playAudio));
-campaignsRouter.get(
-  '/downloadaudio',
-  asyncHandler(campaignsController.downloadAudio)
+
+campaignsRouter.put(
+  '/:campaignId',
+  asyncHandler(campaignsController.updateCampaign)
 );
 
-campaignsRouter.get(
+campaignsRouter.put(
+  '/:campaignId/stop',
+  asyncHandler(campaignsController.stopCampaign)
+);
+
+campaignsRouter.delete(
   '/:campaignId',
-  asyncHandler(campaignsController.getOneCampaign)
+  asyncHandler(campaignsController.deleteCampaign)
 );
 
 module.exports = campaignsRouter;

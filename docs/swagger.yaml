@@ -2,13 +2,17 @@ swagger: '2.0'
 info:
   version: '1.0.0'
   title: 'LAfrica Mobile Text to Voice API'
-host: api.voix.lafricamobile.com
-# host: localhost:5000
+# host: api.voix.lafricamobile.com
+host: localhost:5000
 basePath: '/'
 consumes:
   - 'application/json'
 produces:
   - 'application/json'
+
+# securityDefinitions:
+#   BasicAuth:
+#     type: basic
 
 paths:
   /auth/login:
@@ -868,6 +872,7 @@ paths:
       summary: Get statistics for a specific campaign.
       tags: 
         - Contacts
+        - Statistics
       parameters:
           - in: path
             name: user_id
@@ -911,6 +916,70 @@ paths:
         404:
           description: Wrong audio filename. Please ensure to have vocalized a text message before trying to broadcast.
           
+  /users/{user_id}/statistics:
+    get:
+      summary: Get all statistics. For super admin only.
+      tags: 
+        - Statistics
+      parameters:
+        - in: path
+          name: user_id
+          type: integer
+          required: true
+          description: Numeric ID of the user to get.
+      
+      responses:
+        200:
+          description: Get all campaigns statistics.
+          schema: 
+            type: object
+            properties:
+              callDatas:
+                type: array
+                items:
+                  type: object
+                  properties: 
+                    contact_id: 
+                      type: integer
+                      description: ID of the contact.
+                    mailing_campaign_id: 
+                      type: integer
+                      description: ID of the campaign.
+                    sending_status: 
+                      type: string
+                      description: Campaign status (0 if in creation, 1 if pending, 2 if send)
+                    lam_contact_id: 
+                      type: integer
+                      description: ID of the contact attributed by the voice API.
+                    call_state_id: 
+                      type: integer
+                      description: State of the call.
+                    call_result_id:
+                      type: integer 
+              totalCampaignsSent: 
+                type: integer
+                description: Total amount of campaigns broadcasted.
+              totalCampaignPerUser: 
+                type: array
+                items:
+                  type: object
+                  properties: 
+                    firstname: 
+                      type: string
+                      description: User firstname.
+                    lastname:
+                      type: string
+                      description: User lastname.
+                    id_client_user:
+                      type: integer
+                      description: User ID.
+                    total:
+                      type: integer
+                      description: Total of campaigns broadcasted by this user.
+
+        
+        401:
+          description: 'Unhautorized.'
 
 
 

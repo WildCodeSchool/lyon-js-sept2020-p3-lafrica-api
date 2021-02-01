@@ -129,7 +129,7 @@ module.exports.createContacts = async (
           if (contactAssigned) {
             return {
               id: modifiedContact.id,
-              campaign_id,
+              campaign_id: parseInt(campaign_id, 10),
               lastname,
               firstname,
               phone_number,
@@ -156,7 +156,7 @@ module.exports.createContacts = async (
         if (contactAssigned) {
           return {
             id: result.insertId,
-            campaign_id,
+            campaign_id: parseInt(campaign_id, 10),
             lastname,
             firstname,
             phone_number,

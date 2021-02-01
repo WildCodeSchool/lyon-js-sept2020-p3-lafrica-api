@@ -38,6 +38,9 @@ module.exports.campaignHistoryCheck = async () => {
             );
           });
         });
+      })
+      .catch((err) => {
+        console.log(err);
       });
     serviceIsRunning = false;
   }

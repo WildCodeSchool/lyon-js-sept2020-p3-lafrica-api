@@ -2,8 +2,8 @@ swagger: '2.0'
 info:
   version: '1.0.0'
   title: 'LAfrica Mobile Text to Voice API'
-# host: api.text2voice.duckdns.org
-host: localhost:5000
+host: api.voix.lafricamobile.com
+# host: localhost:5000
 basePath: '/'
 consumes:
   - 'application/json'
@@ -49,6 +49,9 @@ paths:
               lastname:
                 type: string
                 description: The user lastname.
+              role:
+                type: string
+                description: The user role (null if a classic user).
 
         401:
           description: 'Invalid credentials'
@@ -153,31 +156,38 @@ paths:
         200:
           description: A list of campaigns
           schema:
-            type: array
-            items : 
-              type: object
-              properties:
-                id:
-                  type: integer
-                  description: The campaign ID.
-                id_client_user:
-                  type: integer
-                  description: The user ID.
-                name:
-                  type: string
-                  description: The campaign name.
-                text_message:
-                  type: string
-                  description: The message which has been vocalized.
-                vocal_message_file_url:
-                  type: string
-                  description: Path storage of the audio file.
-                date:
-                  type: string
-                  description: Expected date of campaign broadcasting. 
-                sending_status:
-                  type: integer
-                  description: Status of the campaign (0 if pending, 1 if completed)
+            type: object
+            properties: 
+              total : 
+                type: integer
+                description : The total amount of campaigns for a specific user.
+              campaigns:
+                type: array
+                description : A list of campaigns.
+                items:
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                      description: The campaign ID.
+                    id_client_user:
+                      type: integer
+                      description: The user ID.
+                    name:
+                      type: string
+                      description: The campaign name.
+                    text_message:
+                      type: string
+                      description: The message which has been vocalized.
+                    vocal_message_file_url:
+                      type: string
+                      description: Path storage of the audio file.
+                    date:
+                      type: string
+                      description: Expected date of campaign broadcasting. 
+                    sending_status:
+                      type: integer
+                      description: Status of the campaign (0 if in creation, 1 if pending, 2 if completed).
 
         401:
           description: 'Unhautorized. The user is not logged in, or the user ID does not match the user identified by the cookie session or the current user is not allowed to get the user campaigns.'
@@ -194,7 +204,7 @@ paths:
           name: user_id
           type: integer
           required: true
-          description: Numeric ID of the user to get.
+          description: Numeric ID of the user.
       responses:
         201:
           description: Campaign created
@@ -211,6 +221,9 @@ paths:
         400:
           description: Calling this route with an empty request body (JSON) is a no-op.
 
+
+
+  /users/{user_id}/campaigns/{campaign_id}:
     put:
       summary: Update a campaign
       tags: 
@@ -222,33 +235,41 @@ paths:
           name: user_id
           type: integer
           required: true
-          description: Numeric ID of the user to get.
+          description: Numeric ID of the user.
+        - in: path
+          name: campaign_id
+          type: integer
+          required: true
+          description: Numeric ID of the campaign to update.
         - in: body
-          name: user
+          name: campaign
           schema:
             type: object
             required:
-              - name
-              - text_message
-              - vocal_message_file_url
-              - date
+              - campaign_name
+              - campaign_text
+              - campaign_vocal
+              - campaign_date
             properties:
-              name:
+              campaign_name:
                 type: string
                 description: The campaign name.
-              text_message:
+                example: ""
+              campaign_text:
                 type: string
                 description: The message which has been vocalized.
-              vocal_message_file_url:
+                example: ""
+              campaign_vocal:
                 type: string
-                description: Path storage of the audio file.
-              date:
+                description: Name of the audio file.
+                example : "vocal.mp3"
+              campaign_date:
                 type: string
                 format : date-time
                 description: Expected date of campaign broadcasting (YYYY-MM-DDThh:mm:ssZ)
       responses:
-        201:
-          description: Campaign created
+        200:
+          description: Campaign updated
           schema:
             type: object 
             properties:
@@ -273,12 +294,100 @@ paths:
               sending_status:
                 type: integer
                 description: Status of the campaign (0 if pending, 1 if completed)
+              lam_campaign_id:
+                type: integer
+                description: ID of the campaign attributed by the voice API when the campaign is broadcasted.
 
         401:
           description: 'Unhautorized. The user is not logged in, or the user ID does not match the user identified by the cookie session or the current user.'
 
         400:
           description: Calling this route with an empty request body (JSON) is a no-op.
+
+        404:
+          description: Wrong audio filename. Please ensure to have vocalized a text message before trying to broadcast.
+    
+    delete:
+      summary: Delete a campaign
+      description : Only campaigns which have not been send can be deleted.
+      tags:
+        - Campaigns
+      parameters:
+        - in: path
+          name: user_id
+          type: integer
+          required: true
+          description: Numeric ID of the user.
+        - in: path
+          name: campaign_id
+          type: integer
+          required: true
+          description: Numeric ID of the campaign to delete.
+
+      responses:
+        200: 
+          description: Campaign successfully deleted
+        400: 
+          description: The campaign cannot be deleted as it has already been send
+        500:
+          description: An error occured in deleting campaign.
+
+  /users/{user_id}/campaigns/{campaign_id}/stop:
+    put: 
+      summary: Stop a campaign
+      description : A campaign can be stopped until 3 minutes before the broadcasting hour scheduled. Stop campaign resets its date to null and its sending status to 0 (in creation).
+      tags:
+        - Campaigns
+      parameters:
+        - in: path
+          name: user_id
+          type: integer
+          required: true
+          description: Numeric ID of the user.
+        - in: path
+          name: campaign_id
+          type: integer
+          required: true
+          description: Numeric ID of the campaign to stop.
+        
+      responses:
+        200: 
+          description: Campaign successfully stopped.
+          schema: 
+            type: object
+            properties:
+              id:
+                type: integer
+                description: The campaign ID.
+              id_client_user:
+                type: integer
+                description: The user ID.
+              name:
+                type: string
+                description: The campaign name.
+              text_message:
+                type: string
+                description: The message which has been vocalized.
+              vocal_message_file_url:
+                type: string
+                description: Path storage of the audio file.
+              date:
+                type: string
+                description: Expected date of campaign broadcasting. 
+              sending_status:
+                type: integer
+                description: Status of the campaign (0 if pending, 1 if completed)
+              lam_campaign_id:
+                type: integer
+                description: ID of the campaign attributed by the voice API when the campaign is broadcasted.
+        400: 
+          description: Impossible to stop this campaign
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+                description: This campaign has already been send and cannot be stopped.
     
   /users/{user_id}/campaigns/uploadtext:
     post:
@@ -400,7 +509,7 @@ paths:
           required: true
           description: Audio file name and extension (i.e file.mp3)
       produces : 
-            - application/json
+            - audio
       responses:
         200:
           description: A stream of the audio file requested.
@@ -433,6 +542,11 @@ paths:
         401:
           description: 'Unhautorized. The user is not logged in, or the user ID does not match the user identified by the cookie session or the current user is not allowed to get the user campaigns.'
 
+        404:
+          description: Wrong audio filename. Please ensure to have vocalized a text message before trying to broadcast.
+
+    
+
   /users/{user_id}/campaigns/{campaign_id}/contacts:
     get:
       summary: Get contacts associated to a campaign.
@@ -456,28 +570,34 @@ paths:
         200:
           description: Get contacts associated to a campaign.
           schema:
-            type: array
-            items : 
-              type: object
-              properties:
-                id:
-                  type: integer
-                  description: The contact ID.
-                lastname:
-                  type: string
-                  description: The contact lastname.
-                firstname:
-                  type: string
-                  description: The contact firstname.
-                phone_number:
-                  type: string
-                  description: The contact phone number.
-                id_client_user:
-                  type: integer
-                  description: The user ID.
-                campaign_id:
-                  type: integer
-                  description: The campaign ID.
+            type: object
+            properties: 
+              total:
+                type : integer
+                description : Total amount of contacts for a specific campaign.
+              contacts :
+                type : array
+                items : 
+                  type: object
+                  properties:
+                    id:
+                      type: integer
+                      description: The contact ID.
+                    lastname:
+                      type: string
+                      description: The contact lastname.
+                    firstname:
+                      type: string
+                      description: The contact firstname.
+                    phone_number:
+                      type: string
+                      description: The contact phone number.
+                    id_client_user:
+                      type: integer
+                      description: The user ID.
+                    campaign_id:
+                      type: integer
+                      description: The campaign ID.
 
         400:
           description: 'Impossible to create contacts for this campaign.'
@@ -523,8 +643,8 @@ paths:
       produces : 
             - application/json
       responses:
-        200:
-          description: Get contacts associated to a campaign.
+        201:
+          description: Contacts successfully created and associated.
           schema:
             type: array
             items : 
@@ -541,7 +661,7 @@ paths:
                   description: The contact firstname.
                 phone_number:
                   type: string
-                  description: The contact phone number.
+                  description: The contact phone number. 
                 id_client_user:
                   type: integer
                   description: The user ID.
@@ -550,12 +670,9 @@ paths:
                   description: The campaign ID.
 
         400:
-          description: 'Impossible to get contacts for this campaign.'
+          description: 'Impossible to create contacts for this campaign.'
         401:
           description: 'Unhautorized. The user is not logged in, or the user ID does not match the user identified by the cookie session or the current user is not allowed to get the user campaigns.'
-
-        404:
-          description: 'File upload only support the following filetypes: .xlsx, .csv'
 
   /users/{user_id}/campaigns/{campaign_id}/contacts/upload:
     post:
@@ -580,11 +697,8 @@ paths:
         - in: formData
           name: uploaded_contacts
           type: file
-          description: "Contacts to upload. The format supported are .xlsx and .csv. The file should be structured as follows: 
-          - Column #1: lastname
-          - Column #2: firstname
-          - Column #3: phone_number
-          - Rows : the contact data (string)."
+          description: "Contacts to upload. The format supported are .xlsx and .csv.
+          A template is available at the following URL : https://api.voix.lafricamobile.com/template"
           required: true
         
       produces : 
@@ -681,7 +795,7 @@ paths:
                   description: The contact firstname.
                 phone_number:
                   type: string
-                  description: The contact phone number.
+                  description: The contact phone number. Please precise the phone indicator (i.e. 33 for France, 221 for Senegal etc.). 
                 id_client_user:
                   type: integer
                   description: The user ID.
@@ -726,7 +840,52 @@ paths:
         401:
           description: 'Unhautorized. The user is not logged in, or the user ID does not match the user identified by the cookie session or the current user is not allowed to get the user campaigns.'
 
-  /voice/sendVocalMessage/test: 
+
+  /users/{user_id}/campaigns/{campaign_id}/contacts/exportContacts:
+    get:
+      summary: Get contacts list for a specific campaign.
+      tags: 
+        - Contacts
+      parameters:
+          - in: path
+            name: user_id
+            type: integer
+            required: true
+            description: Numeric ID of the user to get.
+          - in: path
+            name: campaign_id
+            type: integer
+            required: true
+            description: Numeric ID of the campaign to get.
+      responses:
+        200: 
+          description: Contacts list successfully generated
+        401:
+          description: 'Unhautorized. The user is not logged in, or the user ID does not match the user identified by the cookie session or the current user is not allowed to get the user campaigns.'
+
+  /users/{user_id}/campaigns/{campaign_id}/contacts/exportStatistics:
+    get:
+      summary: Get statistics for a specific campaign.
+      tags: 
+        - Contacts
+      parameters:
+          - in: path
+            name: user_id
+            type: integer
+            required: true
+            description: Numeric ID of the user to get.
+          - in: path
+            name: campaign_id
+            type: integer
+            required: true
+            description: Numeric ID of the campaign to get.
+      responses:
+        200: 
+          description: Statistics successfully generated
+        401:
+          description: 'Unhautorized. The user is not logged in, or the user ID does not match the user identified by the cookie session or the current user is not allowed to get the user campaigns.'
+
+  /voice/test: 
     post: 
       summary: Test a broadcasted audio message.
       tags: 
@@ -740,7 +899,8 @@ paths:
             properties:
               vocalisationFileName:
                 type: string
-                description: The name of the audio message as returned by the API.
+                description: The name of the audio message with its extension as returned by the API.
+                example: vocal.mp3
               phoneNumber:
                 type: string
                 description: Please be aware to precise the phone indicator (i.e. 33 for France, 221 for Senegal etc.). 

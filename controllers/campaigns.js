@@ -70,8 +70,18 @@ module.exports.downloadAudio = async (req, res) => {
   const pathFile = path.join(
     `${__dirname}/../file-storage/private/${audioFile}`
   );
-  console.log(pathFile);
-  res.download(pathFile);
+
+  const access = util.promisify(fs.access);
+
+  try {
+    await access(pathFile);
+  } catch (err) {
+    return res
+      .status(404)
+      .json({ errorMessage: 'The requested audio file does not exist' });
+  }
+
+  return res.download(pathFile);
 };
 
 module.exports.readText = async (req, res) => {
@@ -123,8 +133,20 @@ module.exports.createCampaignId = async (req, res) => {
 
 module.exports.updateCampaign = async (req, res) => {
   const campaign_id = req.params.campaignId;
-  const campaignDatas = req.body[0];
+  const campaignDatas = req.body;
   // const contactsList = req.body[1];
+  const pathFile = path.join(
+    `${__dirname}/../file-storage/private/${campaignDatas.campaign_vocal}`
+  );
+
+  fs.access(pathFile, (err) => {
+    if (err) {
+      return res
+        .status(404)
+        .json({ errorMessage: 'The requested audio file does not exist' });
+    }
+    return true;
+  });
 
   const data = await updateCampaign(campaign_id, campaignDatas);
   if (data) {
@@ -145,25 +167,20 @@ module.exports.stopCampaign = async (req, res) => {
     return res.status(200).json(result);
   }
   return res.status(400).json({
-    error: 'This campaign has already been send and cannot be canceled',
+    error: 'This campaign has already been send and cannot be stopped',
   });
 };
 
 module.exports.deleteCampaign = async (req, res) => {
   const campaignData = await findOneCampaign(req.params.campaignId);
   if (campaignData.sending_status === 2) {
-    return res.status(200).send('La campagne a déjà été diffusée');
+    return res
+      .status(400)
+      .send('The campaign cannot be deleted as it has already been send');
   }
   if (campaignData.sending_status !== 2) {
     await deleteCampaign(req.params.campaignId);
-    return res.status(200).send('Le campagne a été supprimée');
+    return res.status(200).send('Campaign successfully deleted');
   }
-  return res
-    .status(500)
-    .send(`Un problème est survenu lors de la suppression de la campagne`);
-};
-
-module.exports.getTemplate = async (req, res) => {
-  const pathFile = path.join(`${__dirname}/../template.xlsx`);
-  res.sendFile(pathFile);
+  return res.status(500).send(`An error occured in deleting campaign.`);
 };

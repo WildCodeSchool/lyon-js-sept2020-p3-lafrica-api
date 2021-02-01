@@ -1,4 +1,6 @@
 const xlsx = require('xlsx');
+const Excel = require('exceljs');
+const path = require('path');
 const fs = require('fs');
 const {
   findAllContacts,
@@ -15,13 +17,19 @@ module.exports.getCollection = async (req, res) => {
   }
   return res.status(400).send(`Impossible d'afficher les contacts`);
 };
+
 module.exports.getCollectionForCampaign = async (req, res) => {
-  const data = await findContactsForCampaign(
-    req.campaign_id,
-    req.currentUser.id
+  let { limit = 10, offset = 0 } = req.query;
+  const campaign_id = parseInt(req.campaign_id, 10);
+  limit = parseInt(limit, 10);
+  offset = parseInt(offset, 10);
+  const [total, contacts] = await findContactsForCampaign(
+    campaign_id,
+    limit,
+    offset
   );
-  if (data) {
-    return res.status(200).json(data);
+  if (contacts) {
+    return res.status(200).json({ total, contacts });
   }
   return res.status(400).send(`Impossible d'afficher les contacts`);
 };
@@ -75,5 +83,81 @@ module.exports.deleteContact = async (req, res) => {
   if (data) {
     return res.status(200).send('Le contact a été supprimé');
   }
-  return res.status(400).send(`Impossible de suprrimer le contact`);
+  return res.status(400).send(`Impossible de supprimer le contact`);
+};
+
+module.exports.exportContacts = async (req, res) => {
+  const campaignId = parseInt(req.campaign_id, 10);
+  // eslint-disable-next-line no-unused-vars
+  const [total, data] = await findContactsForCampaign(campaignId);
+  if (data) {
+    const workbook = new Excel.Workbook();
+
+    const contactsFileName = Math.random()
+      .toString(36)
+      .replace(/[^a-z]+/g, '')
+      .substring(0, 5);
+    const worksheet = workbook.addWorksheet('Contacts');
+    worksheet.columns = [
+      { header: 'lastname', key: 'lastname' },
+      { header: 'firstname', key: 'firstname' },
+      { header: 'phone_number', key: 'phone_number' },
+    ];
+    worksheet.columns.forEach((column) => {
+      // eslint-disable-next-line no-param-reassign
+      column.width = column.header.length < 12 ? 12 : column.header.length;
+    });
+    worksheet.getRow(1).font = { bold: true };
+    data.forEach((e) => {
+      worksheet.addRow({
+        ...e,
+      });
+    });
+    const pathFile = path.join(
+      `${__dirname}/../file-storage/private/${contactsFileName}.xlsx`
+    );
+    await workbook.xlsx.writeFile(pathFile);
+    return res.status(200).download(pathFile);
+  }
+  return res.status(400).send(`Impossible d'afficher les contacts`);
+};
+
+module.exports.exportStatistics = async (req, res) => {
+  const campaignId = parseInt(req.campaign_id, 10);
+  console.log(campaignId);
+  // eslint-disable-next-line no-unused-vars
+  const [total, data] = await findContactsForCampaign(campaignId);
+  // need to create a workbook object. Almost everything in ExcelJS is based off of the workbook object.
+  const workbook = new Excel.Workbook();
+
+  const statisticsFileName = Math.random()
+    .toString(36)
+    .replace(/[^a-z]+/g, '')
+    .substring(0, 5);
+  const worksheet = workbook.addWorksheet('Statistiques');
+  worksheet.columns = [
+    { header: 'lastname', key: 'lastname' },
+    { header: 'firstname', key: 'firstname' },
+    { header: 'phone_number', key: 'phone_number' },
+    { header: 'sending_status', key: 'sending_status' },
+  ];
+  worksheet.columns.forEach((column) => {
+    // eslint-disable-next-line no-param-reassign
+    column.width = column.header.length < 12 ? 12 : column.header.length;
+  });
+
+  worksheet.getRow(1).font = { bold: true };
+
+  data.forEach((e) => {
+    worksheet.addRow({
+      ...e,
+    });
+  });
+
+  const pathFile = path.join(
+    `${__dirname}/../file-storage/private/${statisticsFileName}.xlsx`
+  );
+  await workbook.xlsx.writeFile(pathFile);
+
+  res.download(pathFile);
 };

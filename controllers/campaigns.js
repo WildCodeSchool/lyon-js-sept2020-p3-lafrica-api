@@ -1,18 +1,45 @@
 const fs = require('fs');
 const path = require('path');
 const util = require('util');
+const parseSortParams = require('../helpers/parseSortParams');
 const {
   findUsersCampaigns,
   findOneCampaign,
   createCampaignId,
   updateCampaign,
+  findAllClientCampaigns,
+  stopCampaign,
+  deleteCampaign,
 } = require('../models/campaigns');
 const WordFileReader = require('../helpers/handleReadWordFile');
 const textVocalization = require('../services/textToSpeech');
 
 module.exports.getCollection = async (req, res) => {
-  const data = await findUsersCampaigns(req.currentUser.id);
-  res.json(data);
+  let { limit = 10, offset = 0 } = req.query;
+  const { name, sortby = 'date.asc', lastname, firstname } = req.query;
+  limit = parseInt(limit, 10);
+  offset = parseInt(offset, 10);
+  const orderBy = parseSortParams(sortby);
+
+  if (req.currentUser.role === 'admin') {
+    const [total, campaigns] = await findAllClientCampaigns(
+      limit,
+      offset,
+      name,
+      orderBy,
+      firstname,
+      lastname
+    );
+    return res.json({ total, campaigns });
+  }
+  const [total, campaigns] = await findUsersCampaigns(
+    req.currentUser.id,
+    limit,
+    offset,
+    name,
+    orderBy
+  );
+  return res.json({ total, campaigns });
 };
 
 module.exports.getOneCampaign = async (req, res) => {
@@ -108,4 +135,35 @@ module.exports.updateCampaign = async (req, res) => {
   return res
     .status(500)
     .send('Something went wrong uploading campaigns database');
+};
+
+module.exports.stopCampaign = async (req, res) => {
+  const campaign_id = req.params.campaignId;
+
+  const result = await stopCampaign(campaign_id);
+  if (result) {
+    return res.status(200).json(result);
+  }
+  return res.status(400).json({
+    error: 'This campaign has already been send and cannot be canceled',
+  });
+};
+
+module.exports.deleteCampaign = async (req, res) => {
+  const campaignData = await findOneCampaign(req.params.campaignId);
+  if (campaignData.sending_status === 2) {
+    return res.status(200).send('La campagne a déjà été diffusée');
+  }
+  if (campaignData.sending_status !== 2) {
+    await deleteCampaign(req.params.campaignId);
+    return res.status(200).send('Le campagne a été supprimée');
+  }
+  return res
+    .status(500)
+    .send(`Un problème est survenu lors de la suppression de la campagne`);
+};
+
+module.exports.getTemplate = async (req, res) => {
+  const pathFile = path.join(`${__dirname}/../template.xlsx`);
+  res.sendFile(pathFile);
 };

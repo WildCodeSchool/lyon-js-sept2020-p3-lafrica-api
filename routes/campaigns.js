@@ -12,7 +12,6 @@ campaignsRouter.get(
 
 campaignsRouter.get('/', asyncHandler(campaignsController.getCollection));
 campaignsRouter.get('/audio', asyncHandler(campaignsController.playAudio));
-// campaignsRouter.get('/template', asyncHandler(campaignsController.getTemplate));
 campaignsRouter.get(
   '/:campaignId',
   asyncHandler(campaignsController.getOneCampaign)

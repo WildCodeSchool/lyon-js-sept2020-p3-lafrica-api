@@ -151,10 +151,6 @@ const getCollection = async (
   lastname,
   email
 ) => {
-  // const campaigns = await db.query(
-  //   'SELECT * FROM mailing_campaign WHERE id_client_user = ?',
-  //   [id]
-  // );
   const users = await user.findMany({
     where: {
       firstname: {

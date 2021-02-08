@@ -2,8 +2,7 @@ swagger: '2.0'
 info:
   version: '1.0.0'
   title: 'LAfrica Mobile Text to Voice API'
-# host: api.voix.lafricamobile.com
-host: localhost:5000
+host: api.voix.lafricamobile.com
 basePath: '/'
 consumes:
   - 'application/json'

@@ -12,7 +12,6 @@ module.exports = async (req, res, next) => {
 
     return next();
   }
-  console.log('fail');
 
   return res.sendStatus(401);
 };

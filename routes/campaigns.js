@@ -3,6 +3,7 @@ const campaignsRouter = require('express').Router();
 const asyncHandler = require('express-async-handler');
 const campaignsController = require('../controllers/campaigns');
 const handleTextUpload = require('../middlewares/handleTextUpload');
+const handleUserConfirmed = require('../middlewares/handleUserConfirmed');
 
 campaignsRouter.get(
   '/downloadaudio',
@@ -17,7 +18,11 @@ campaignsRouter.get(
   asyncHandler(campaignsController.getOneCampaign)
 );
 
-campaignsRouter.post('/', asyncHandler(campaignsController.createCampaignId));
+campaignsRouter.post(
+  '/',
+  handleUserConfirmed,
+  asyncHandler(campaignsController.createCampaignId)
+);
 campaignsRouter.post(
   '/uploadtext',
   handleTextUpload,

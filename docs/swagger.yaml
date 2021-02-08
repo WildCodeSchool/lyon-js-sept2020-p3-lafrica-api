@@ -2,8 +2,8 @@ swagger: '2.0'
 info:
   version: '1.0.0'
   title: 'LAfrica Mobile Text to Voice API'
-host: api.voix.lafricamobile.com
-# host: localhost:5000
+# host: api.voix.lafricamobile.com
+host: localhost:5000
 basePath: '/'
 consumes:
   - 'application/json'
@@ -72,7 +72,7 @@ paths:
         200:
           description: User logged out
 
-  /users/signUp:
+  /users/signup:
     post:
       summary: Registration of a new user
       tags: 
@@ -221,6 +221,9 @@ paths:
 
         401:
           description: 'Unhautorized. The user is not logged in, or the user ID does not match the user identified by the cookie session or the current user.'
+
+        403:
+          description: 'This account has not been confirmed by the administrator yet.'
 
         400:
           description: Calling this route with an empty request body (JSON) is a no-op.
@@ -921,6 +924,7 @@ paths:
       summary: Get all statistics. For super admin only.
       tags: 
         - Statistics
+        - Admin
       parameters:
         - in: path
           name: user_id
@@ -981,7 +985,98 @@ paths:
         401:
           description: 'Unhautorized.'
 
-
+  /users:
+    get:
+      summary: Get all users. For super admin only.
+      tags: 
+        - Admin
+      
+      responses:
+        200:
+          description: Get all campaigns statistics.
+          schema: 
+            type: object
+            properties:
+              users:
+                type: array
+                items:
+                  type: object
+                  properties: 
+                    id: 
+                      type: integer
+                      description: ID of the user.
+                    firstname: 
+                      type: string
+                      description: User firstname.
+                    lastname: 
+                      type: string
+                      description: User lastname.
+                    email: 
+                      type: string
+                      description: User email.
+                    user_confirmed: 
+                      type: integer
+                      description: State of the user account (0 if not confirmed, 1 if confirmed).
+                    phone_number:
+                      type: string 
+                      description: User phone number.
+              total: 
+                type: integer
+                description: Total amount of users.
+              
+        401:
+          description: Unauthorized. This route is only accessible by super admin users.
+  /users/{user_id}:
+    put:
+      summary: Update user account status. For super admin only.
+      tags: 
+        - Admin
+      consumes:
+        - application/json
+      parameters:
+        - in : path
+          name : user_id
+          type: integer
+          description: Numeric ID of the user.
+          required: true
+        - in: body
+          name: email
+          schema:
+            type: object
+            required:
+              - email
+            properties:
+              email:
+                type: string
+                example: francois.dupont@email.com
+      
+      responses:
+        200:
+          description: Account successfully confirmed.
+          schema: 
+            type: object
+            properties: 
+              id: 
+                type: integer
+                description: ID of the user.
+              firstname: 
+                type: string
+                description: User firstname.
+              lastname: 
+                type: string
+                description: User lastname.
+              email: 
+                type: string
+                description: User email.
+              user_confirmed: 
+                type: integer
+                description: State of the user account (0 if not confirmed, 1 if confirmed).
+              phone_number:
+                type: string 
+                description: User phone number.
+              
+        401:
+          description: Unauthorized. This route is only accessible by super admin users.
 
 # definitions:
 #   Sign Up:

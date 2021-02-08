@@ -2,11 +2,12 @@ const argon2 = require('argon2');
 const crypto = require('crypto');
 const db = require('../db');
 const { ValidationError, RecordNotFoundError } = require('../error-types');
+const { user } = require('../db').prisma;
 
 const findOne = async (id, failIfNotFound = true) => {
-  const user = await db.query('SELECT * FROM user WHERE id = ?', [id]);
-  if (user.length) {
-    return user[0];
+  const result = await db.query('SELECT * FROM user WHERE id = ?', [id]);
+  if (result.length) {
+    return result[0];
   }
   if (failIfNotFound) throw new RecordNotFoundError();
   return null;
@@ -126,6 +127,77 @@ const resetPassword = async (password, user_id) => {
   }
 };
 
+const validateUser = async (id) => {
+  await db.query('UPDATE user SET user_confirmed = ? where id = ?', [true, id]);
+
+  const result = await findOne(id, false);
+
+  if (result) {
+    delete result.encrypted_password;
+    delete result.resetPasswordToken;
+    delete result.resetPasswordExpires;
+    delete result.manager_id;
+    delete result.role;
+    return result;
+  }
+  return false;
+};
+
+const getCollection = async (
+  limit,
+  offset,
+  orderBy,
+  firstname,
+  lastname,
+  email
+) => {
+  // const campaigns = await db.query(
+  //   'SELECT * FROM mailing_campaign WHERE id_client_user = ?',
+  //   [id]
+  // );
+  const users = await user.findMany({
+    where: {
+      firstname: {
+        contains: firstname || undefined,
+      },
+      lastname: {
+        contains: lastname || undefined,
+      },
+      email: {
+        contains: email || undefined,
+      },
+    },
+    select: {
+      id: true,
+      firstname: true,
+      lastname: true,
+      email: true,
+      user_confirmed: true,
+      phone_number: true,
+    },
+    orderBy,
+    take: limit,
+    skip: offset,
+  });
+
+  const total = (
+    await user.aggregate({
+      where: {
+        firstname: {
+          contains: firstname || undefined,
+        },
+        lastname: {
+          contains: lastname || undefined,
+        },
+        email: {
+          contains: email || undefined,
+        },
+      },
+      count: true,
+    })
+  ).count;
+  return [total, users];
+};
 module.exports = {
   findByEmail,
   validate,
@@ -137,4 +209,6 @@ module.exports = {
   forgotPassword,
   resetPassword,
   checkUserToken,
+  validateUser,
+  getCollection,
 };

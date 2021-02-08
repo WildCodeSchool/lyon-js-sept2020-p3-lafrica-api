@@ -85,9 +85,7 @@ module.exports.downloadAudio = async (req, res) => {
 };
 
 module.exports.video = async (req, res) => {
-  const pathFile = path.join(
-    `${__dirname}/../file-storage/public/tutorielText2voice.mp4`
-  );
+  const pathFile = path.join(`${__dirname}/../tutorielText2voice.mp4`);
 
   const stream = fs.createReadStream(`${pathFile}`);
   stream.on("error", () => {

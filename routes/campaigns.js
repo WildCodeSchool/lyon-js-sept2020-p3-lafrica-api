@@ -10,6 +10,8 @@ campaignsRouter.get(
   asyncHandler(campaignsController.downloadAudio)
 );
 
+campaignsRouter.get('/video', asyncHandler(campaignsController.video));
+
 campaignsRouter.get('/', asyncHandler(campaignsController.getCollection));
 campaignsRouter.get('/audio', asyncHandler(campaignsController.playAudio));
 campaignsRouter.get(

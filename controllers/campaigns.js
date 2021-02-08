@@ -160,8 +160,6 @@ module.exports.updateCampaign = async (req, res) => {
 
   const data = await updateCampaign(campaign_id, campaignDatas);
   if (data) {
-    // const { campaignData } = data;
-    // const data2 = await assignContactsToCampaign(contactsList, campaignData.id);
     return res.status(200).json(data);
   }
   return res

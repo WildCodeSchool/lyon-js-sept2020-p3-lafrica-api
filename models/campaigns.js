@@ -2,7 +2,6 @@ const db = require('../db');
 const { mailing_campaign } = require('../db').prisma;
 
 module.exports.findAllCampaigns = (id) => {
-  // return db.query('SELECT * FROM mailing_campaign WHERE id = ?', [id]);
   return mailing_campaign.findMany({
     where: {
       id: parseInt(id, 10),
@@ -16,10 +15,6 @@ module.exports.findUsersCampaigns = async (
   name,
   orderBy
 ) => {
-  // const campaigns = await db.query(
-  //   'SELECT * FROM mailing_campaign WHERE id_client_user = ?',
-  //   [id]
-  // );
   const campaigns = await mailing_campaign.findMany({
     where: {
       id_client_user: id,
@@ -44,10 +39,6 @@ module.exports.findUsersCampaigns = async (
 };
 
 module.exports.findOneCampaign = async (id) => {
-  // const [
-  //   campaignData,
-  // ] = await db.query('SELECT * FROM mailing_campaign WHERE id = ?', [id]);
-
   const campaignData = await mailing_campaign.findUnique({
     where: {
       id: parseInt(id, 10),
@@ -55,10 +46,6 @@ module.exports.findOneCampaign = async (id) => {
   });
 
   if (campaignData) {
-    // const contactsListCampaign = await db.query(
-    //   'SELECT contact.id, contact.lastname, contact.firstname, contact.phone_number contact_id FROM `contact_in_mailing_campaign` JOIN contact WHERE mailing_campaign_id = ?',
-    //   [campaignData.id]
-    // );
     return campaignData;
   }
   return null;
@@ -72,10 +59,6 @@ module.exports.findAllClientCampaigns = async (
   firstname,
   lastname
 ) => {
-  // const campaignData = await db.query(
-  //   'SELECT mailing_campaign.*, user.firstname, user.lastname, user.email FROM mailing_campaign JOIN user ON user.id = mailing_campaign.id_client_user'
-  // );
-  // return campaignData;
   const campaigns = await mailing_campaign.findMany({
     include: {
       user: true,
@@ -144,16 +127,6 @@ module.exports.updateCampaign = async (campaign_id, campaignDatas) => {
   } = campaignDatas;
   const campaign_date_formated = new Date(campaign_date);
   try {
-    // await db.query(
-    //   'UPDATE mailing_campaign SET name = ?, text_message = ?, vocal_message_file_url = ?, date = ?  where id = ?',
-    //   [
-    //     campaign_name,
-    //     campaign_text,
-    //     campaign_vocal,
-    //     campaign_date_formated,
-    //     campaign_id,
-    //   ]
-    // );
     await mailing_campaign.update({
       data: {
         name: campaign_name,
@@ -175,7 +148,6 @@ module.exports.updateCampaign = async (campaign_id, campaignDatas) => {
 
 module.exports.assignContactsToCampaign = async (contactsList, campaignId) => {
   try {
-    // for (let i = 0; i < contactsList.length; i += 1)
     contactsList.forEach(async (contact) => {
       const existingContactCheck = await db.query(
         'SELECT * FROM contact_in_mailing_campaign WHERE contact_id = ? AND mailing_campaign_id = ?',
@@ -196,11 +168,6 @@ module.exports.assignContactsToCampaign = async (contactsList, campaignId) => {
 };
 
 const checkIfCampaignNotSend = async (id) => {
-  // const check = await db.query(
-  //   'SELECT * from mailing_campaign WHERE id = ? AND sending_status != 2',
-  //   [id]
-  // );
-
   const check = await mailing_campaign.findMany({
     where: {
       id: parseInt(id, 10),
@@ -212,9 +179,6 @@ const checkIfCampaignNotSend = async (id) => {
 
   const date = Date.now() - 180000;
   const formated_date = new Date(date);
-
-  // Check if the campain date is > now minus 3 minutes
-  // If not, the campaign cannot be stopped to avoid issues with campaignSendingDateCheck
 
   if (check.length) {
     if (check[0].date > formated_date || !check[0].date) {

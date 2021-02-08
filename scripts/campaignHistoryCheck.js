@@ -6,14 +6,7 @@ module.exports.campaignHistoryCheck = async () => {
   let serviceIsRunning = false;
   if (!serviceIsRunning) {
     serviceIsRunning = true;
-    // const allContactToUpdate = await db.query(
-    //   'SELECT * from contact_in_mailing_campaign WHERE call_state_id = 1'
-    //   // Voir ce qu'il se passe quand callStateId = 2 --> à quoi ça correspond ?
-    //   // Voir ce qu'il se passe quand callStateId = 3 --> à quoi ça correspond ?
-    // );
-    // if (allContactToUpdate.length === 0) {
-    //   return null;
-    // }
+
     await axios
       .get(
         `https://voice.lafricamobile.com/api/Histories?login=${LAM_API_LOGIN}&password=${LAM_API_PASSWORD}`

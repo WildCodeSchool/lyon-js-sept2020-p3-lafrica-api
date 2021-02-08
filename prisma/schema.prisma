@@ -73,6 +73,7 @@ model user {
   encrypted_password   String
   phone_number         String
   role                 String?
+  user_confirmed       Int                @default(0)
   manager_id           Int?
   resetPasswordToken   String?
   resetPasswordExpires DateTime?

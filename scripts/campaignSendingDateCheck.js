@@ -10,9 +10,7 @@ module.exports.campaignSendingDateCheck = async () => {
   let serviceIsRunning = false;
   if (!serviceIsRunning) {
     serviceIsRunning = true;
-    // const allCampaignsList = await db.query(
-    //   'SELECT * from mailing_campaign WHERE sending_status = 0 OR sending_status = 1'
-    // );
+
     const allCampaignsList = await mailing_campaign.findMany({
       where: {
         OR: [{ sending_status: 0 }, { sending_status: 1 }],
@@ -118,18 +116,6 @@ module.exports.campaignSendingDateCheck = async () => {
                     });
                   }
                   console.log('retour API LAM', res2.data);
-                  // res.data.id = numéro de la campagne côté LAM
-                  // res.data.calls = tableau rassemblant tous les appels
-                  // res.data.calls[i] =
-                  //        id = numéro de l'appel côté LAM
-                  //        contactId = numéro du contact côté LAM
-                  //        called = numéro de téléphone appelé
-                  //        callStateId: 1, ???
-                  //        callResultId: 1, ???
-                  //        processingCallCount: 0,
-                  // callSuccessCount: 0,
-                  // callFailedCount: 0,
-                  // callIgnoredCount: 0,
                 });
             }, i * 1000);
           });

@@ -1,7 +1,7 @@
-const fs = require('fs');
-const path = require('path');
-const util = require('util');
-const parseSortParams = require('../helpers/parseSortParams');
+const fs = require("fs");
+const path = require("path");
+const util = require("util");
+const parseSortParams = require("../helpers/parseSortParams");
 const {
   findUsersCampaigns,
   findOneCampaign,
@@ -10,18 +10,18 @@ const {
   findAllClientCampaigns,
   stopCampaign,
   deleteCampaign,
-} = require('../models/campaigns');
-const WordFileReader = require('../helpers/handleReadWordFile');
-const textVocalization = require('../services/textToSpeech');
+} = require("../models/campaigns");
+const WordFileReader = require("../helpers/handleReadWordFile");
+const textVocalization = require("../services/textToSpeech");
 
 module.exports.getCollection = async (req, res) => {
   let { limit = 10, offset = 0 } = req.query;
-  const { name, sortby = 'date.asc', lastname, firstname } = req.query;
+  const { name, sortby = "date.asc", lastname, firstname } = req.query;
   limit = parseInt(limit, 10);
   offset = parseInt(offset, 10);
   const orderBy = parseSortParams(sortby);
 
-  if (req.currentUser.role === 'admin') {
+  if (req.currentUser.role === "admin") {
     const [total, campaigns] = await findAllClientCampaigns(
       limit,
       offset,
@@ -57,10 +57,10 @@ module.exports.playAudio = async (req, res) => {
   const audioFile = `${req.query.audio}`;
   const pathFile = path.join(`${__dirname}/../file-storage/private`);
   const stream = fs.createReadStream(`${pathFile}/${audioFile}`);
-  stream.on('error', () => {
+  stream.on("error", () => {
     res
       .status(404)
-      .json({ errorMessage: 'The requested audio file does not exist' });
+      .json({ errorMessage: "The requested audio file does not exist" });
   });
   stream.pipe(res);
 };
@@ -78,10 +78,20 @@ module.exports.downloadAudio = async (req, res) => {
   } catch (err) {
     return res
       .status(404)
-      .json({ errorMessage: 'The requested audio file does not exist' });
+      .json({ errorMessage: "The requested audio file does not exist" });
   }
 
   return res.download(pathFile);
+};
+
+module.exports.video = async (req, res) => {
+  const pathFile = path.join(`${__dirname}/../tutorielText2voice.mp4`);
+
+  const stream = fs.createReadStream(`${pathFile}`);
+  stream.on("error", () => {
+    res.status(404).json({ errorMessage: "Cannot access to the video" });
+  });
+  stream.pipe(res);
 };
 
 module.exports.readText = async (req, res) => {
@@ -89,24 +99,24 @@ module.exports.readText = async (req, res) => {
   const fileExtension = path.extname(req.file.path);
   let uploadedTextToVocalize;
   switch (fileExtension) {
-    case '.txt':
+    case ".txt":
       try {
-        uploadedTextToVocalize = await readfile(req.file.path, 'utf-8');
+        uploadedTextToVocalize = await readfile(req.file.path, "utf-8");
         break;
       } catch (err) {
         console.error(err);
         return res
           .status(500)
-          .send('Something went wrong in reading .txt file');
+          .send("Something went wrong in reading .txt file");
       }
-    case '.docx':
+    case ".docx":
       try {
         uploadedTextToVocalize = await WordFileReader.extract(req.file.path);
       } catch (err) {
         console.error(err);
         return res
           .status(500)
-          .send('Something went wrong in reading .docx file');
+          .send("Something went wrong in reading .docx file");
       }
       break;
     default:
@@ -128,7 +138,7 @@ module.exports.createCampaignId = async (req, res) => {
   }
   return res
     .status(500)
-    .send('Something went wrong uploading campaigns database');
+    .send("Something went wrong uploading campaigns database");
 };
 
 module.exports.updateCampaign = async (req, res) => {
@@ -143,20 +153,18 @@ module.exports.updateCampaign = async (req, res) => {
     if (err) {
       return res
         .status(404)
-        .json({ errorMessage: 'The requested audio file does not exist' });
+        .json({ errorMessage: "The requested audio file does not exist" });
     }
     return true;
   });
 
   const data = await updateCampaign(campaign_id, campaignDatas);
   if (data) {
-    // const { campaignData } = data;
-    // const data2 = await assignContactsToCampaign(contactsList, campaignData.id);
     return res.status(200).json(data);
   }
   return res
     .status(500)
-    .send('Something went wrong uploading campaigns database');
+    .send("Something went wrong uploading campaigns database");
 };
 
 module.exports.stopCampaign = async (req, res) => {
@@ -167,7 +175,7 @@ module.exports.stopCampaign = async (req, res) => {
     return res.status(200).json(result);
   }
   return res.status(400).json({
-    error: 'This campaign has already been send and cannot be stopped',
+    error: "This campaign has already been send and cannot be stopped",
   });
 };
 
@@ -176,11 +184,11 @@ module.exports.deleteCampaign = async (req, res) => {
   if (campaignData.sending_status === 2) {
     return res
       .status(400)
-      .send('The campaign cannot be deleted as it has already been send');
+      .send("The campaign cannot be deleted as it has already been send");
   }
   if (campaignData.sending_status !== 2) {
     await deleteCampaign(req.params.campaignId);
-    return res.status(200).send('Campaign successfully deleted');
+    return res.status(200).send("Campaign successfully deleted");
   }
   return res.status(500).send(`An error occured in deleting campaign.`);
 };
